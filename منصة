@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LoRD Academy - منصة الطالب</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #050505;
+            color: #d4af37;
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.3); }
+        }
+
+        .gold-gradient {
+            background: linear-gradient(to bottom, #f9f295, #e0aa3e, #b88a44, #816021);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(15, 15, 15, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #816021 100%);
+            color: black;
+            font-weight: 900;
+            transition: 0.3s;
+        }
+
+        input, textarea, select {
+            background: rgba(20, 20, 20, 0.8) !important;
+            border: 1px solid rgba(212, 175, 55, 0.3) !important;
+            color: white !important;
+            outline: none;
+        }
+
+        .admin-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 55px;
+            height: 55px;
+            background: #d4af37;
+            color: black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(212,175,55,0.4);
+            z-index: 50;
+        }
+
+        .log-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-right: 3px solid #d4af37;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="loading" class="loading-overlay text-xl font-bold animate-pulse">
+        LoRD Academy...
+    </div>
+
+    <div id="stars" class="stars-container"></div>
+
+    <!-- أيقونة الترس -->
+    <div onclick="openLoginModal()" class="settings-btn">⚙️</div>
+
+    <div class="relative z-10 min-h-screen flex flex-col p-4 sm:p-6 md:p-10">
+        <!-- Header -->
+        <header class="text-center py-10 sm:py-16 mb-8 sm:mb-12 border-b-2 border-[#d4af37] bg-black/60 rounded-b-[40px] sm:rounded-b-[80px] shadow-2xl px-4">
+            <h1 class="text-4xl sm:text-6xl md:text-8xl font-black uppercase gold-gradient tracking-tighter leading-tight select-none">
+                LoRD Academy
+            </h1>
+            <h2 class="text-xl sm:text-2xl md:text-4xl text-white font-bold mt-2 sm:mt-4 tracking-wide">منصة الطالب</h2>
+            <div class="prepared-by mt-3 text-lg sm:text-xl opacity-90 text-gray-300 font-bold">إعداد / علي جلال</div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center gap-3 sm:gap-6 mb-10 sm:mb-16">
+            <button onclick="changeSection('courses')" id="tab-courses" class="flex-1 max-w-[150px] sm:max-w-[200px] py-3 sm:py-4 rounded-xl font-black text-xs sm:text-xl transition-all">
+                المقررات
+            </button>
+            <button onclick="changeSection('summaries')" id="tab-summaries" class="flex-1 max-w-[150px] sm:max-w-[200px] py-3 sm:py-4 rounded-xl font-black text-xs sm:text-xl transition-all">
+                التلخيصات
+            </button>
+            <button onclick="changeSection('contact')" id="tab-contact" class="flex-1 max-w-[150px] sm:max-w-[200px] py-3 sm:py-4 rounded-xl font-black text-xs sm:text-xl transition-all">
+                تواصل معنا
+            </button>
+        </div>
+
+        <!-- Main Grid -->
+        <div id="main-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10 max-w-7xl mx-auto w-full px-2 mb-20">
+            <!-- Content Injected Here -->
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="hidden max-w-7xl mx-auto w-full glass-card p-6 sm:p-10 rounded-[30px] mb-10">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-[#d4af37]/20 pb-4 gap-4 text-right">
+                <div class="w-full md:w-auto">
+                    <h3 class="text-2xl font-black gold-gradient">لوحة تحكم المسؤول</h3>
+                    <p id="admin-info" class="text-sm text-gray-400"></p>
+                </div>
+                <button onclick="logoutAdmin()" class="text-red-500 font-bold border border-red-500 px-6 py-2 rounded-xl hover:bg-red-500 hover:text-white transition">تسجيل خروج</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- إضافة محتوى -->
+                <div class="space-y-4 text-right">
+                    <h4 class="font-bold text-white border-r-4 border-[#d4af37] pr-2">إضافة محتوى جديد</h4>
+                    <input type="text" id="new-title" placeholder="اسم المقرر" class="w-full p-3 rounded-xl">
+                    <input type="text" id="new-link" placeholder="رابط التحميل" class="w-full p-3 rounded-xl">
+                    <div class="flex gap-2">
+                        <select id="new-type" class="flex-1 p-3 rounded-xl">
+                            <option value="courses">مقرر</option>
+                            <option value="summaries">تلخيص</option>
+                        </select>
+                        <input type="text" id="new-icon" placeholder="أيقونة" value="📚" class="w-1/4 p-3 rounded-xl text-center">
+                    </div>
+                    <button onclick="addNewItem()" id="btn-add" class="download-btn w-full py-4 rounded-xl shadow-xl active:scale-95">نشر 🚀</button>
+                </div>
+
+                <!-- سجل النشاطات -->
+                <div class="bg-black/40 p-5 rounded-2xl border border-white/5 h-[400px] flex flex-col text-right">
+                    <h4 class="font-bold text-blue-400 mb-4 flex items-center justify-end gap-2 text-sm">
+                        <span>🕒</span> سجل النشاطات
+                    </h4>
+                    <div id="logs-list" class="flex-1 overflow-y-auto pr-2 custom-scrollbar"></div>
+                </div>
+
+                <!-- إدارة المسؤولين (المالك فقط) -->
+                <div id="owner-area" class="hidden bg-red-900/10 p-5 rounded-2xl border border-red-500/20 h-[400px] flex flex-col text-right">
+                    <h4 class="font-bold text-red-500 mb-4 border-r-4 border-red-500 pr-2">إدارة المسؤولين الجدد</h4>
+                    <div class="space-y-2 mb-4">
+                        <input type="text" id="admin-user-new" placeholder="اسم المستخدم الجديد" class="w-full p-3 rounded-xl text-xs">
+                        <input type="password" id="admin-pass-new" placeholder="كلمة المرور الجديدة" class="w-full p-3 rounded-xl text-xs">
+                        <button onclick="createAdmin()" class="w-full py-2 bg-red-600 text-white rounded-lg font-bold text-xs">حفظ الحساب</button>
+                    </div>
+                    <div id="admins-list" class="flex-1 overflow-y-auto space-y-2 custom-scrollbar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="admin-modal">
+        <div class="glass-card p-10 rounded-[40px] w-full max-w-md text-center">
+            <div class="text-5xl mb-6">🔐</div>
+            <h3 class="text-2xl font-black text-white mb-6">تسجيل الدخول</h3>
+            <div class="space-y-4">
+                <input type="text" id="login-user" placeholder="اسم المستخدم" class="w-full p-4 rounded-2xl text-center text-lg">
+                <input type="password" id="login-pass" placeholder="كلمة المرور" class="w-full p-4 rounded-2xl text-center text-lg tracking-widest">
+                <button onclick="attemptLogin()" class="download-btn w-full py-4 rounded-2xl text-xl font-bold">دخول</button>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white transition text-sm">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // تم ربط بيانات مشروعك الحقيقية بنجاح
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCq_eJoh3wroqd9rWHMdaVscVrDAbvH1Q8",
+            authDomain: "ali1-5d8ae.firebaseapp.com",
+            projectId: "ali1-5d8ae",
+            storageBucket: "ali1-5d8ae.firebasestorage.app",
+            messagingSenderId: "20632198502",
+            appId: "1:20632198502:web:27810ddbaa380ddea4bca7",
+            measurementId: "G-0FQ00V431K"
+        };
+        // ==========================================
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = "lord-academy-final";
+
+        const STATIC_COURSES = [
+            { id: "s1", title: "الأدب العباسي", icon: "📜", link: "https://drive.google.com/uc?export=download&id=1JFqVDwBMfp9_WHvi9scF_faNJJ1pNAi1", type: "courses", isStatic: true },
+            { id: "s2", title: "تحليل نصوص أدبية", icon: "✍️", link: "https://drive.google.com/uc?export=download&id=1dzNBYpWO2vQazMAdaeZgCzL-I6CNijyk", type: "courses", isStatic: true },
+            { id: "s3", title: "التدريس المصغر 2", icon: "🏫", link: "https://drive.google.com/uc?export=download&id=1CuKOXVBYXgGMzsXO19r_YY8al-rneV4V", type: "courses", isStatic: true },
+            { id: "s4", title: "تعليم اللغة العربية لغير الناطقين بها", icon: "🌍", link: "https://drive.google.com/uc?export=download&id=1blqRW0AvCTfx4WIZVfQLaXswzbd3e2PN", type: "courses", isStatic: true },
+            { id: "s5", title: "تقنيات المعلومات والاتصال", icon: "💻", link: "https://drive.google.com/uc?export=download&id=1f5vbpCLB3eJgw_UrmxRRJDi74DhFvhdi", type: "courses", isStatic: true },
+            { id: "s6", title: "تقييم التعلم", icon: "📝", link: "https://drive.google.com/uc?export=download&id=1frWmdqsButzuwVQwDhfUrsQTQgPrphGO", type: "courses", isStatic: true },
+            { id: "s7", title: "سيكولوجية التعلم", icon: "🧠", link: "https://drive.google.com/uc?export=download&id=1tybdMa_lhdD_EbWRiugDPyh_k0EJqSD6", type: "courses", isStatic: true },
+            { id: "s8", title: "علم البديع 1", icon: "📕", link: "https://drive.google.com/uc?export=download&id=1868OBvqeiHyvJ0B-U9EksSf1T6kVuyb0", type: "courses", isStatic: true },
+            { id: "s9", title: "علم البديع 2", icon: "📕", link: "https://drive.google.com/uc?export=download&id=1uR1ogQ0g6SlqDC69MSeCEs06C_mSGGV6", type: "courses", isStatic: true },
+            { id: "s10", title: "قضايا إسلامية", icon: "🕌", link: "https://drive.google.com/uc?export=download&id=16gSxPtHo1xXDKrwpFu73C02JCSM5qsSX", type: "courses", isStatic: true },
+            { id: "s11", title: "مصادر لغوية وأدبية", icon: "📚", link: "https://drive.google.com/uc?export=download&id=1STXB2g8N-ego3Frej2ngc_YEMtRnREVa", type: "courses", isStatic: true },
+            { id: "s12", title: "مفاهيم لغوية", icon: "📖", link: "https://drive.google.com/uc?export=download&id=17oUJVmKTSjrCGd5t0yjX3dLGSRtzN5yw", type: "courses", isStatic: true }
+        ];
+
+        let dynamicContent = [];
+        let currentAdmin = null;
+        let isOwner = false;
+        let currentSection = 'courses';
+
+        // الدخول المجهول للطلاب
+        signInAnonymously(auth).catch(() => {});
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('loading').style.display = 'none';
+            if (user) loadAllData();
+        });
+
+        function loadAllData() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'content'), (snap) => {
+                dynamicContent = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                render();
+            });
+        }
+
+        window.attemptLogin = async () => {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+
+            if (u === "LoRD112" && p === "Ali&my self1") {
+                activateAdmin(u, true);
+                return;
+            }
+
+            const docSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admins', u));
+            if (docSnap.exists() && docSnap.data().password === p) {
+                activateAdmin(u, false);
+            } else {
+                alert("بيانات خاطئة!");
+            }
+        };
+
+        function activateAdmin(name, owner) {
+            currentAdmin = name;
+            isOwner = owner;
+            document.getElementById('admin-panel').classList.remove('hidden');
+            document.getElementById('admin-info').innerText = `أهلاً ${name}`;
+            if (owner) {
+                document.getElementById('owner-area').classList.remove('hidden');
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'admins'), (s) => {
+                    document.getElementById('admins-list').innerHTML = s.docs.map(d => `
+                        <div class="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5">
+                            <button onclick="removeAdmin('${d.id}')" class="text-red-500 text-xs hover:underline">حذف</button>
+                            <span class="text-xs font-bold text-white">${d.id}</span>
+                        </div>`).join('');
+                });
+            }
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), (s) => {
+                const logs = s.docs.map(d => d.data()).sort((a,b) => b.at - a.at).slice(0, 20);
+                document.getElementById('logs-list').innerHTML = logs.map(l => `
+                    <div class="log-item">
+                        <div class="flex justify-between opacity-40 text-[9px] mb-1">
+                            <span>${new Date(l.at).toLocaleTimeString('ar-EG')}</span>
+                            <span>${l.user}</span>
+                        </div>
+                        <p class="text-xs font-bold">${l.msg}</p>
+                    </div>`).join('');
+            });
+            closeModal();
+            render();
+        }
+
+        window.addNewItem = async () => {
+            const t = document.getElementById('new-title').value.trim();
+            const l = document.getElementById('new-link').value.trim();
+            const type = document.getElementById('new-type').value;
+            const icon = document.getElementById('new-icon').value.trim();
+            if (!t || !l) return;
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'content'), {
+                title: t, link: l, type, icon, at: Date.now()
+            });
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), {
+                user: currentAdmin, msg: `نشر: ${t}`, at: Date.now()
+            });
+            document.getElementById('new-title').value = "";
+            document.getElementById('new-link').value = "";
+        };
+
+        window.deleteItem = async (id, title) => {
+            if (!confirm(`حذف ${title}؟`)) return;
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'content', id));
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), {
+                user: currentAdmin, msg: `حذف: ${title}`, at: Date.now()
+            });
+        };
+
+        window.createAdmin = async () => {
+            const u = document.getElementById('admin-user-new').value.trim();
+            const p = document.getElementById('admin-pass-new').value.trim();
+            if (!u || !p) return;
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admins', u), { password: p });
+            document.getElementById('admin-user-new').value = "";
+            document.getElementById('admin-pass-new').value = "";
+        };
+
+        window.removeAdmin = async (id) => {
+            if (confirm(`إزالة ${id}؟`)) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admins', id));
+        };
+
+        window.logoutAdmin = () => {
+            currentAdmin = null;
+            document.getElementById('admin-panel').classList.add('hidden');
+            render();
+        };
+
+        window.changeSection = (s) => { currentSection = s; render(); };
+        window.openLoginModal = () => document.getElementById('login-modal').style.display = 'flex';
+        window.closeModal = () => document.getElementById('login-modal').style.display = 'none';
+
+        function render() {
+            const grid = document.getElementById('main-grid');
+            let list = [...STATIC_COURSES, ...dynamicContent];
+            const filtered = list.filter(i => i.type === currentSection).sort((a,b) => (b.at || 0) - (a.at || 0));
+
+            ['courses', 'summaries', 'contact'].forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                el.className = `flex-1 max-w-[150px] sm:max-w-[200px] py-3 sm:py-4 rounded-xl font-black text-xs sm:text-xl transition-all ${currentSection === t ? 'bg-[#d4af37] text-black shadow-lg' : 'border border-[#d4af37]/40 text-[#d4af37]'}`;
+            });
+
+            if (currentSection === 'contact') {
+                grid.innerHTML = `<div class="col-span-full max-w-2xl mx-auto w-full glass-card p-10 rounded-[40px] text-center">
+                    <div class="text-7xl mb-6">💬</div>
+                    <h3 class="text-2xl font-black mb-4">تواصل مع المطور</h3>
+                    <p class="text-[#d4af37] text-2xl font-bold mb-8" dir="ltr">01020289403</p>
+                    <textarea id="msg" rows="4" class="w-full p-4 rounded-2xl mb-4 text-right" placeholder="رسالتك..."></textarea>
+                    <button onclick="window.open('https://wa.me/201020289403?text='+encodeURIComponent(document.getElementById('msg').value))" class="download-btn w-full py-5 rounded-2xl text-xl font-bold">إرسال 🚀</button>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(i => `
+                <div class="glass-card p-8 rounded-[40px] text-center flex flex-col justify-between h-full relative group hover:border-[#d4af37] transition-all">
+                    ${currentAdmin && !i.isStatic ? `<button onclick="deleteItem('${i.id}', '${i.title}')" class="absolute top-4 left-4 p-2 bg-red-600/10 text-red-500 rounded-full z-20 hover:bg-red-600 hover:text-white transition text-xs">🗑️</button>` : ''}
+                    <div>
+                        <div class="text-6xl mb-6 transform group-hover:scale-110 transition-transform">${i.icon || '📚'}</div>
+                        <h3 class="text-xl font-black text-white mb-8 leading-relaxed">${i.title}</h3>
+                    </div>
+                    <a href="${i.link}" target="_blank" class="download-btn w-full py-4 rounded-xl text-lg block shadow-lg">تحميل</a>
+                </div>`).join('');
+        }
+
+        const c = document.getElementById('stars');
+        for (let i = 0; i < 60; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = (Math.random() * 2 + 1) + 'px';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.animationDelay = Math.random() * 5 + 's';
+            c.appendChild(s);
+        }
+    </script>
+</body>
+</html>
