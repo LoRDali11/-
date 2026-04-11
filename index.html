@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار مادة التعلم - Lord Academy</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        #quiz-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 50px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #334155;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-gold);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-meta {
+            color: var(--primary-gold);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background-color: #334155;
+            border: 2px solid transparent;
+            color: var(--text-main);
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-align: right;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #475569;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success) !important;
+            border-color: #166534;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--error) !important;
+            border-color: #991b1b;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #1e293b;
+            border-right: 4px solid var(--primary-gold);
+            display: none;
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+
+        #next-btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-gold);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        #result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--primary-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 20px auto;
+            color: var(--primary-gold);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .logo { font-size: 2rem; }
+            .question-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <div class="logo">Lord Academy</div>
+        <div class="subtitle">إعداد: علي جلال</div>
+    </div>
+
+    <div id="quiz-container">
+        <div id="quiz-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="question-meta" id="q-number">سؤال 1 من 60</div>
+            <div class="question-text" id="question-text">جاري تحميل السؤال...</div>
+            <div class="options-grid" id="options-grid"></div>
+            <div class="explanation" id="explanation"></div>
+            <button id="next-btn" onclick="nextQuestion()">السؤال التالي</button>
+        </div>
+
+        <div id="result-screen">
+            <h2 style="color: var(--primary-gold)">انتهى الاختبار!</h2>
+            <div class="score-circle" id="final-score">0/60</div>
+            <p id="score-text"></p>
+            <button class="option-btn" style="width: 100%; margin-top: 20px;" onclick="location.reload()">إعادة الاختبار</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 جميع الحقوق محفوظة - Lord Academy
+    </footer>
+
+    <script>
+        // قاعدة البيانات الأساسية للأسئلة
+        const questionsData = [
+            // --- اختيار من متعدد (30 سؤال) ---
+            {
+                q: "يشير مصطلح ________ إلى تغيرات شبه دائمة في بنية وسلوك الكائن مرتبطة بالعمر الزمني.",
+                options: ["التعلم", "الارتقاء", "النضج", "الأداء"],
+                correctAnswerText: "الارتقاء",
+                explanation: "الارتقاء يرتبط ارتباطاً منتظماً بالعمر الزمني ويوصف بأنه ارتقائي إذا ارتبط بالعمر."
+            },
+            {
+                q: "ما هو المفهوم الذي يشير إلى عوامل الفطرة والتغيرات البيولوجية الناتجة عن الوراثة؟",
+                options: ["الارتقاء", "النمو", "النضج", "التدريب"],
+                correctAnswerText: "النضج",
+                explanation: "النضج يمثل عوامل الفطرة والتغيرات البيولوجية والفسيولوجية الناتجة عن الوراثة."
+            },
+            {
+                q: "التعلم هو تغير ________ في السلوك ناتج عن الخبرة والممارسة.",
+                options: ["مؤقت", "ثابت نسبياً", "لحظي", "فطري"],
+                correctAnswerText: "ثابت نسبياً",
+                explanation: "التعلم يتميز بأنه ثبات نسبي غير مطلق، حيث قد ينسى الفرد أو يطور خبراته."
+            },
+            {
+                q: "أي من التالي لا يعتبر من نتائج التعلم حسب النص؟",
+                options: ["المهارات", "الاتجاهات", "القيم", "الطول الجسمي"],
+                correctAnswerText: "الطول الجسمي",
+                explanation: "الطول الجسمي نتاج نضج بيولوجي وليس تعلماً ناتجاً عن الممارسة."
+            },
+            {
+                q: "الزيادة الإضافية في مقدار الخاصية السلوكية التي تتخذ صورة التحسن تسمى:",
+                options: ["النضج", "النمو", "التعب", "الارتقاء"],
+                correctAnswerText: "النمو",
+                explanation: "النمو يقتصر على التغيرات التي تتخذ صورة التحسن أو التقدم أو الزيادة."
+            },
+            {
+                q: "العادة هي استعداد مكتسب لأداء عمل بطريقة ________.",
+                options: ["بطيئة", "آلية سريعة", "مجهدة", "مترددة"],
+                correctAnswerText: "آلية سريعة",
+                explanation: "العادة تتميز بالأداء الآلي السريع الدقيق الذي لا يتطلب مجهوداً كبيراً."
+            },
+            {
+                q: "صاحب مقولة أن 'الرغبة في متابعة التعلم' هي أهم اتجاه نفسي هو:",
+                options: ["جانييه", "ثورنديك", "ديوي", "ماسلو"],
+                correctAnswerText: "ديوي",
+                explanation: "يرى جون ديوي أن أهم اتجاه نفسي هو الرغبة في متابعة التعلم."
+            },
+            {
+                q: "المهارات هي عادات حركية يقصد بها تحقيق غايات ________.",
+                options: ["شخصية فقط", "اجتماعية", "فطرية", "عشوائية"],
+                correctAnswerText: "اجتماعية",
+                explanation: "المهارات تهدف لتحقيق غايات اجتماعية مثل مهارة الكتابة أو قيادة السيارة."
+            },
+            {
+                q: "تعريف 'جانييه' للتعلم يركز على أنه واقعة تحدث عند توفر ________ يؤدي لتغير الأداء.",
+                options: ["نضج", "منبه", "تعب", "مرض"],
+                correctAnswerText: "منبه",
+                explanation: "عرف جانييه التعلم بأنه واقعة تحدث عند توفر منبه يؤدي لتغير في الأداء."
+            },
+            {
+                q: "التعلم في علم النفس يعتبر متغيراً ________ بين المنبه والاستجابة.",
+                options: ["مستقلاً", "تابعاً", "وسيطاً", "خارجياً"],
+                correctAnswerText: "وسيطاً",
+                explanation: "التعلم عملية مفترضة نظرياً تقع بين المنبه والاستجابة وتسمى متغيراً وسيطاً."
+            },
+            {
+                q: "النشاط التعليمي المقصود الذي تقوم به المؤسسات يسمى:",
+                options: ["التعلم", "التعليم", "التدريس", "النضج"],
+                correctAnswerText: "التدريس",
+                explanation: "التدريس حالة خاصة من التعليم، وهو نشاط مقصود تقوم به المؤسسات."
+            },
+            {
+                q: "في المراحل التعليمية الأولى، يغلب على الاستعداد العقلي الصبغة ________.",
+                options: ["الخاصة", "العامة (الذكاء العام)", "الفنية", "الرياضية"],
+                correctAnswerText: "العامة (الذكاء العام)",
+                explanation: "في البداية يسود الذكاء العام، وتظهر القدرات الخاصة بوضوح في نهاية المرحلة الإعدادية."
+            },
+            {
+                q: "أي من الحاجات التالية تقع في قاعدة هرم ماسلو؟",
+                options: ["الأمن", "الحب", "الفسيولوجية", "تحقيق الذات"],
+                correctAnswerText: "الفسيولوجية",
+                explanation: "الحاجات الفسيولوجية (الجوع والعطش) هي قاعدة الهرم وأقوى الحاجات."
+            },
+            {
+                q: "الحاجات الناشئة عن النمو في تقسيم ماسلو تشمل:",
+                options: ["الحب", "الأمن", "المعرفية والجمالية", "الاحترام"],
+                correctAnswerText: "المعرفية والجمالية",
+                explanation: "حاجات النمو تشمل المعرفة والجمال وتحقيق الذات وتوجد في قمة الهرم."
+            },
+            {
+                q: "الممارسة تختلف عن التكرار في أنها تكرار ________.",
+                options: ["آلي", "معزز", "عشوائي", "سلبي"],
+                correctAnswerText: "معزز",
+                explanation: "الممارسة تكرار معزز يلاحظ فيه تحسن تدريجي في الأداء نتيجة التغذية الراجعة."
+            },
+            {
+                q: "الممارسة ________ هي الأفضل غالباً في التعلم والتذكر طويل المدى.",
+                options: ["المركزة", "الموزعة", "المفاجئة", "السريعة"],
+                correctAnswerText: "الموزعة",
+                explanation: "أثبتت الدراسات أن الممارسة الموزعة أفضل في التعلم والتذكر المرجأ."
+            },
+            {
+                q: "القدرة على التحكم في عضلة المستقيم (الإخراج) تنضج عادة في الشهر:",
+                options: ["الأول", "الثالث", "السابع أو الثامن", "العاشر"],
+                correctAnswerText: "السابع أو الثامن",
+                explanation: "تنضج هذه العضلة في الشهر السابع أو الثامن لارتباطها بنضج القشرة المخية."
+            },
+            {
+                q: "العمليات الإرادية في جسم الإنسان مسؤولة عنها:",
+                options: ["الغدد", "القشرة المخية", "العضلات فقط", "النخاع الشوكي"],
+                correctAnswerText: "القشرة المخية",
+                explanation: "القشرة المخية هي المسؤولة عن جميع العمليات الإرادية في جسم الإنسان."
+            },
+            {
+                q: "النضج ________ هو وصول منظومة الخوف والغضب لمستوى مناسب لعمر الفرد.",
+                options: ["البيولوجي", "العقلي", "الانفعالي", "الاجتماعي"],
+                correctAnswerText: "الانفعالي",
+                explanation: "النضج الانفعالي يتعلق بتطور المشاعر مثل الحب والكراهية والغيرة بشكل سوي."
+            },
+            {
+                q: "الموظف الذي يتلعثم أمام رئيسه يعتبر غير ناضج ________.",
+                options: ["عقلياً", "انفعالياً", "اجتماعياً", "بيولوجياً"],
+                correctAnswerText: "اجتماعياً",
+                explanation: "التلعثم أمام الرؤساء يُصنف كمظهر من مظاهر عدم النضج الاجتماعي."
+            },
+            {
+                q: "أي مما يلي يعد من شروط التعلم الأساسية؟",
+                options: ["الدافعية", "الممارسة", "النضج", "جميع ما سبق"],
+                correctAnswerText: "جميع ما سبق",
+                explanation: "شروط التعلم هي الدافعية والممارسة والنضج."
+            },
+            {
+                q: "تعريف ثورنديك للتعلم هو أنه سلسلة من التغيرات في ________.",
+                options: ["التفكير", "السلوك", "الجسم", "الوراثة"],
+                correctAnswerText: "السلوك",
+                explanation: "عرف ثورنديك التعلم بأنه سلسلة من التغيرات في سلوك الإنسان."
+            },
+            {
+                q: "الممارسة الموزعة تناسب بشكل أكبر تلاميذ المرحلة ________.",
+                options: ["الجامعية", "الثانوية", "الابتدائية", "الدراسات العليا"],
+                correctAnswerText: "الابتدائية",
+                explanation: "الممارسة الموزعة تناسب أعمار تلاميذ المرحلة الابتدائية وتسهل التعلم القائم على المعنى."
+            },
+            {
+                q: "من وظائف الممارسة أنها تمنع ________ الأعمال الفرعية في المهارة.",
+                options: ["تحسن", "انطفاء ونسيان", "تكامل", "تعزيز"],
+                correctAnswerText: "انطفاء ونسيان",
+                explanation: "تساعد الممارسة على استمرار الارتباطات ومنع انطفاء المهارات الفرعية."
+            },
+            {
+                q: "العلاقة بين قوة الدافع والطاقة المبذولة في السلوك هي علاقة ________.",
+                options: ["عكسية", "طردية", "منعدمة", "ضعيفة"],
+                correctAnswerText: "طردية",
+                explanation: "توجد علاقة طردية؛ فكلما زاد الدافع زادت الطاقة المبذولة لتحقيق الهدف."
+            },
+            {
+                q: "الحوافز هي مثيرات ________ تجعل الكائن مستعداً للاستجابة.",
+                options: ["خارجية", "داخلية عضوية", "اجتماعية", "ثقافية"],
+                correctAnswerText: "داخلية عضوية",
+                explanation: "الحوافز (Incentives) هي مثيرات داخلية عضوية مثل الجوع والعطش."
+            },
+            {
+                q: "البواعث هي موضوعات في البيئة ________ تهدف لإزالة التوتر.",
+                options: ["الداخلية", "الخارجية", "العقلية", "الوراثية"],
+                correctAnswerText: "الخارجية",
+                explanation: "البواعث هي أشياء خارجية (مثل الطعام) تقابل الحوافز الداخلية (مثل الجوع)."
+            },
+            {
+                q: "يعد 'التعلم' عملية لا يمكن ملاحظتها مباشرة بل نستدل عليها من ________.",
+                options: ["الذكاء", "الأداء (السلوك)", "الوراثة", "العمر"],
+                correctAnswerText: "الأداء (السلوك)",
+                explanation: "نحن لا نرى التعلم مباشرة بل نلاحظ التغيرات في السلوك (الأداء)."
+            },
+            {
+                q: "تعتبر 'اللزمات' (مثل قرض الأظافر) نوعاً من التعلم الذي ________.",
+                options: ["يسهل التوافق", "يعوق التوافق", "فطري", "مؤقت"],
+                correctAnswerText: "يعوق التوافق",
+                explanation: "اللزمات حركات آلية متعلمة قد تعوق توافق الفرد مع المجتمع."
+            },
+            {
+                q: "القدرة على التعلم هي أحد التعريفات الشائعة لـ ________.",
+                options: ["النمو", "الذكاء", "الارتقاء", "النضج"],
+                correctAnswerText: "الذكاء",
+                explanation: "يرتبط التعلم بالذكاء ارتباطاً وثيقاً، ومن تعريفات الذكاء أنه القدرة على التعلم."
+            },
+
+            // --- صح وخطأ (30 سؤال) ---
+            {
+                q: "النضج عملية منتظمة ومستمرة تحدث مستقلة نسبياً عن التدريب.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "النضج يعتمد على العوامل الوراثية والفطرة ويحدث حتى دون تدريب."
+            },
+            {
+                q: "يتعلم الإنسان من المدرسة وحدها.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "الإنسان يتعلم من المدرسة والنادي والشارع والتلفزيون ومن المهد إلى اللحد."
+            },
+            {
+                q: "مفهوم التعلم يقتصر فقط على اكتساب العادات الطيبة.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "التعلم يشمل اكتساب كل العادات، سواء كانت حميدة أو ضارة."
+            },
+            {
+                q: "النمو يقتصر على التغيرات التي تتخذ صورة التحسن أو الزيادة.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "بهذا المعنى يصبح النمو جزءاً من مفهومي النضج والتعلم التقدمي."
+            },
+            {
+                q: "مجرد حدوث النضج الجسمي يكون ضماناً كافياً لحدوث التعلم.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "النمو الجسمي شرط ضروري لكنه غير كافٍ بمفرده؛ فالتعلم يحتاج ممارسة."
+            },
+            {
+                q: "الطفل قد يتعلم استجابة ما لكنه يظل غير قادر على أدائها بسبب ظروف معينة.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "هذا يوضح الفرق بين التعلم (عملية داخلية) والأداء (سلوك ظاهر)."
+            },
+            {
+                q: "الخوف من الكلاب نتيجة حادثة عارضة يعتبر نوعاً من التعلم غير المقصود.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "التعلم قد يكون مقصوداً (مدرسي) أو عارضاً غير مقصود."
+            },
+            {
+                q: "العادات العقلية تشمل استخدام الأسلوب العلمي في التفكير.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "العادات أنواع منها الحركية واللفظية والعقلية والاجتماعية."
+            },
+            {
+                q: "قرض القلم بالأسنان يعتبر مهارة حركية.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "قرض القلم عادة وليس مهارة، لأن المهارة تهدف لغايات اجتماعية مفيدة."
+            },
+            {
+                q: "المعلومات تشمل ذكريات الشخص الخاصة والقوانين العلمية التي يفهمها.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "المعلومات والمعاني تشتمل على الكلمات والتواريخ والقوانين والذكريات."
+            },
+            {
+                q: "السلوك الاجتماعي يتمثل فيما يتعلمه الشخص من ميول واتجاهات وقيم.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "التفاعل مع الجماعة يولد تعلماً اجتماعياً في شكل ميول وعواطف."
+            },
+            {
+                q: "التعلم يؤدي إلى تحوير الدوافع الفطرية واكتساب دوافع اجتماعية.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "التعلم يؤثر في الدوافع والانفعالات ويطبعها بطابع اجتماعي."
+            },
+            {
+                q: "التغير الناتج عن التعب أو المرض يعتبر تعلماً.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "التعلم يجب أن يكون ثابتاً نسبياً، أما التعب والمرض فتغيرات عارضة تزول بزوال السبب."
+            },
+            {
+                q: "عرف 'كمبل' التعلم بأنه تغير ثابت في إمكانية السلوك نتيجة للممارسة المعززة.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "هذا هو التعريف الدقيق الذي وضعه كمبل للتعلم."
+            },
+            {
+                q: "التعلم والأداء هما وجهان لعملة واحدة ويعنيان نفس الشيء.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "التعلم متغير وسيط داخلي، والأداء هو المتغير التابع الظاهر."
+            },
+            {
+                q: "التعليم هو النشاط الذي يقوم به المتعلم نفسه لاكتساب المهارات.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "التعلم هو نشاط المتعلم، أما التعليم فهو المهمة الملقاة على عاتق المعلم لمساعدة المتعلم."
+            },
+            {
+                q: "التلميذ ذو الاستعداد العقلي المرتفع يكون أسرع في تحصيله.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "الاستعدادات العقلية عامل ذاتي حاسم في سرعة ومستوى التحصيل."
+            },
+            {
+                q: "تظهر الفروق الفردية في الاستعدادات الخاصة بوضوح في المرحلة الابتدائية.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "الفروق الخاصة تظهر وتتمايز بوضوح في نهاية المرحلة الإعدادية وبداية الثانوية."
+            },
+            {
+                q: "النجاح قد يدفع بعض التلاميذ إلى التواكل والاستهتار.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "تأثير النجاح والفشل يختلف باختلاف استعدادات التلاميذ المزاجية."
+            },
+            {
+                q: "الشعور بالأمن وفقدان الثقة بالنفس ليس لهما أثر على التحصيل.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "تكامل الشخصية والشعور بالأمن له أثر إيجابي كبير على التحصيل الدراسي."
+            },
+            {
+                q: "الدافع هو حالة نفسية فيسيولوجية تهدف لخفض حالة التوتر.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "الدوافع تعمل على استثارة السلوك وتوجيهه للوصول لحالة الاتزان."
+            },
+            {
+                q: "حسب ماسلو، يسعى الفرد لإشباع حاجات الحب قبل إشباع حاجات الأمن.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "لا يسعى الفرد لإشباع الحب والانتماء إلا بعد إشباع الحاجات الفسيولوجية والأمن أولاً."
+            },
+            {
+                q: "الفرد يتعلم دائماً تحت تأثير دافع واحد فقط.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "الفرد يتعلم عادة تحت تأثير مجموعة متداخلة من الدوافع."
+            },
+            {
+                q: "الممارسة وحدها كافية لتحقيق التعلم دون الحاجة للدافعية أو النضج.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "الممارسة لا تحقق فاعلية دون توفر الشروط الأخرى كالدافعية والنضج."
+            },
+            {
+                q: "الممارسة المركزة تكون أكثر فاعلية في حالة التذكر المرجأ (البعيد).",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "الممارسة الموزعة هي الأفضل للتذكر المرجأ، أما المركزة قد تفيد في التذكر الفوري."
+            },
+            {
+                q: "النضج عملية تقدمية تحدث حتى أثناء نوم الكائن الحي.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "النضج عملية بيولوجية داخلية لا تعتمد على إرادة الكائن أو نشاطه."
+            },
+            {
+                q: "محاولة تعليم الطفل مهارة قبل نضج الجزء المسؤول عنها يعتبر إهداراً للوقت.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "صح",
+                explanation: "التعلم يجب أن ينتظر النضج البيولوجي والعقلي المناسب للمهمة."
+            },
+            {
+                q: "اشتغال تلاميذ المرحلة الابتدائية بالتطريز مفيد جداً لصحتهم.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "يسبب ضرراً لأن حاسة الإبصار لم تصل للنمو الفسيولوجي الملائم لهذا العمل الدقيق."
+            },
+            {
+                q: "المخ البشري سلبي تماماً في استقبال المعلومات.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "المخ جزء حيوي ودينامي يقوم بتفاعل المدخلات وتركيبها وتحليلها."
+            },
+            {
+                q: "الطفل في سن الثالثة الذي لا يسلم على الضيوف يعتبر غير ناضج اجتماعياً.",
+                options: ["صح", "خطأ"],
+                correctAnswerText: "خطأ",
+                explanation: "في سن الثالثة لا يعتبر ذلك نقصاً، لكنه يعتبر كذلك إذا كان في سن العاشرة."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        // دالة لترتيب المصفوفة بشكل عشوائي (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questionsData[currentQuestion];
+            document.getElementById('q-number').innerText = `سؤال ${currentQuestion + 1} من ${questionsData.length}`;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-fill').style.width = `${((currentQuestion) / questionsData.length) * 100}%`;
+            
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            // عمل نسخة من الخيارات وخلطها
+            let shuffledOptions = shuffleArray([...q.options]);
+            
+            shuffledOptions.forEach((optText) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = optText;
+                // التحقق من الإجابة بناءً على النص وليس الفهرس الثابت
+                btn.onclick = () => checkAnswer(optText, q.correctAnswerText, btn);
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('explanation').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        function checkAnswer(selectedText, correctText, selectedBtn) {
+            if (answered) return;
+            answered = true;
+            
+            const q = questionsData[currentQuestion];
+            const btns = document.querySelectorAll('.option-btn');
+            
+            if (selectedText === correctText) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                // إظهار الإجابة الصحيحة
+                btns.forEach(btn => {
+                    if (btn.innerText === correctText) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            const exp = document.getElementById('explanation');
+            exp.innerHTML = `<strong>التوضيح:</strong> ${q.explanation}`;
+            exp.style.display = 'block';
+            
+            document.getElementById('next-btn').style.display = 'block';
+            
+            // تعطيل جميع الأزرار بعد الإجابة
+            btns.forEach(btn => btn.disabled = true);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questionsData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').style.display = 'none';
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.style.display = 'block';
+            
+            document.getElementById('final-score').innerText = `${score}/${questionsData.length}`;
+            
+            let message = "";
+            const percentage = (score / questionsData.length) * 100;
+            if (percentage >= 90) message = "ممتاز! أنت ملم جداً بالمادة.";
+            else if (percentage >= 75) message = "جيد جداً! أداء رائع.";
+            else if (percentage >= 50) message = "جيد، يمكنك المراجعة لتحسين مستواك.";
+            else message = "تحتاج إلى مراجعة الملف جيداً مرة أخرى.";
+            
+            document.getElementById('score-text').innerText = message;
+            document.getElementById('progress-fill').style.width = `100%`;
+        }
+
+        // بدء الاختبار عند التحميل
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
