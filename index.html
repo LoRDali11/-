@@ -3,723 +3,653 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoRD Academy - المنصة الشاملة</title>
+    <title>منصة امتحانات | LoRD Academy</title>
     <style>
-        :root {
-            --bg-color: #050505;
-            --card-bg: #111827;
-            --primary-gold: #fbbf24;
-            --secondary-gold: #d97706;
-            --text-main: #f8fafc;
-            --text-secondary: #94a3b8;
-            --success: #22c55e;
-            --error: #ef4444;
-            --glow: 0 0 15px #fbbf24, 0 0 30px #d97706;
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+            background-color: #050505;
+            color: #ffffff;
             display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* شاشة الاستقبال */
-        #home-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-            background: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%);
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, #111 0%, #000 100%);
         }
 
-        .main-logo {
-            font-size: clamp(3.5rem, 12vw, 7rem);
-            font-weight: 900;
-            color: var(--primary-gold);
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            margin-bottom: 0;
-            filter: drop-shadow(var(--glow));
-            animation: golden-pulse 2s infinite alternate;
-        }
-
-        @keyframes golden-pulse {
-            from { text-shadow: 0 0 20px var(--glow-color); opacity: 0.9; }
-            to { text-shadow: 0 0 40px var(--primary-gold), 0 0 70px var(--secondary-gold); opacity: 1; }
-        }
-
-        .academy-subtitle {
-            font-size: 1.4rem;
-            color: var(--text-secondary);
-            margin-bottom: 60px;
-            font-weight: 300;
-            letter-spacing: 4px;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            width: 100%;
+        .container {
+            width: 95%;
             max-width: 700px;
+            text-align: center;
+            position: relative;
         }
 
-        .exam-card-btn {
-            background: linear-gradient(145deg, #1f2937, #111827);
-            border: 2px solid var(--primary-gold);
-            color: var(--primary-gold);
-            padding: 30px 20px;
-            font-size: 1.4rem;
+        /* الشعار الملكي */
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 
+                         0 0 20px rgba(255, 215, 0, 0.8), 
+                         0 0 30px #FFD700,
+                         0 0 40px #FFD700;
+            animation: pulse 2s infinite alternate;
+        }
+
+        .subtitle {
+            color: #d4af37;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
             font-weight: bold;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.8); transform: scale(1); }
+            100% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px #FFD700, 0 0 50px #FFD700; transform: scale(1.02); }
+        }
+
+        /* ================= القائمة الرئيسية ================= */
+        #main-menu {
             display: flex;
             flex-direction: column;
+            gap: 20px;
             align-items: center;
-            gap: 10px;
+            animation: fadeIn 0.8s;
         }
 
-        .exam-card-btn span {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: normal;
-        }
-
-        .exam-card-btn:hover {
-            background: var(--primary-gold);
-            color: #000;
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-        }
-
-        .exam-card-btn:hover span {
-            color: #333;
-        }
-
-        /* واجهة الاختبار */
-        #quiz-screen {
-            display: none;
+        .menu-btn {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            color: #FFD700;
+            border: 2px solid #D4AF37;
             padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .top-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            margin-bottom: 20px;
-        }
-
-        .back-home-btn {
-            background: none;
-            border: 1px solid var(--text-secondary);
-            color: var(--text-secondary);
-            padding: 10px 20px;
-            border-radius: 10px;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 900;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .back-home-btn:hover {
-            border-color: var(--primary-gold);
-            color: var(--primary-gold);
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+            background: #FFD700;
+            color: #000;
         }
 
-        .quiz-container {
-            background-color: var(--card-bg);
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid #374151;
+        /* ================= واجهة الاختبار ================= */
+        #quiz-ui {
+            display: none;
         }
 
-        .progress-container {
-            height: 12px;
-            background-color: #374151;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary-gold), var(--primary-gold));
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .q-meta {
-            color: var(--primary-gold);
-            font-weight: 600;
-            font-size: 1.1rem;
+        .progress-text {
+            color: #f1c40f;
             margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: rgba(255, 215, 0, 0.1);
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .q-text {
+        .quiz-wrapper {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .quiz-card {
+            background: linear-gradient(145deg, #161616, #0a0a0a);
+            border: 2px solid #D4AF37;
+            border-radius: 20px;
+            padding: 35px 25px;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15), inset 0 0 15px rgba(255, 215, 0, 0.05);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .quiz-card.slide-out {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.95);
+            pointer-events: none;
+        }
+
+        .quiz-card.slide-in {
+            opacity: 0;
+            transform: translateX(100px) scale(0.95);
+        }
+
+        .question-type {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
             font-size: 1.6rem;
+            margin-bottom: 30px;
             line-height: 1.6;
-            margin-bottom: 35px;
+            font-weight: 700;
             color: #fff;
         }
 
-        .options-list {
-            display: grid;
+        .options-container {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
         }
 
-        .opt-btn {
-            background-color: #1f2937;
-            border: 2px solid transparent;
-            color: var(--text-main);
-            padding: 20px 25px;
-            border-radius: 15px;
+        .option-btn {
+            background-color: #1a1a1a;
+            color: #eee;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1.25rem;
             cursor: pointer;
-            font-size: 1.2rem;
-            text-align: right;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            outline: none;
+            font-weight: 600;
         }
 
-        .opt-btn:hover:not(:disabled) {
-            background-color: #374151;
-            border-color: var(--text-secondary);
+        .option-btn:hover:not(:disabled) {
+            background-color: #2a2a2a;
+            border-color: #FFD700;
+            color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
         }
 
-        .opt-btn.correct {
-            background-color: var(--success) !important;
-            border-color: #14532d;
-            font-weight: bold;
+        .option-btn.correct {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white !important;
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.5) !important;
+            transform: scale(1.02);
         }
 
-        .opt-btn.wrong {
-            background-color: var(--error) !important;
-            border-color: #7f1d1d;
+        .option-btn.wrong {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.5) !important;
+            animation: shake 0.4s;
         }
 
-        .exp-box {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #0a0a0a;
-            border-right: 6px solid var(--primary-gold);
-            display: none;
-            border-radius: 0 12px 12px 0;
-            color: #e2e8f0;
-            line-height: 1.5;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
         }
 
-        #next-btn {
-            margin-top: 35px;
-            width: 100%;
-            padding: 20px;
-            background-color: var(--primary-gold);
-            color: #000;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            font-weight: 800;
-            cursor: pointer;
-            display: none;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
         }
 
-        /* النتائج */
+        /* ================= شاشة النتيجة ================= */
         #result-screen {
             display: none;
-            text-align: center;
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 50px 30px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            animation: fadeIn 1s forwards;
         }
 
-        .result-circle {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: 10px solid var(--primary-gold);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        #result-screen h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        #result-screen p {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+        }
+
+        .score-highlight {
+            color: #28a745;
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+
+        .action-btns {
             display: flex;
-            align-items: center;
+            gap: 15px;
             justify-content: center;
-            font-size: 3.5rem;
-            margin: 40px auto;
-            color: var(--primary-gold);
-            box-shadow: var(--glow);
+            flex-wrap: wrap;
         }
 
-        footer {
-            margin-top: auto;
-            padding: 40px;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            background-color: #000;
+        .action-btn {
+            background: linear-gradient(to right, #D4AF37, #FFD700);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
+        
+        .action-btn.secondary {
+            background: #222;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+        }
+
+        .back-nav {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #888;
+            font-weight: bold;
+            text-decoration: underline;
+            transition: 0.3s;
+        }
+        .back-nav:hover { color: #FFD700; }
 
         @media (max-width: 600px) {
-            .menu-grid { grid-template-columns: 1fr; }
-            .main-logo { font-size: 3.5rem; }
-            .q-text { font-size: 1.3rem; }
-            .quiz-container { padding: 20px; }
+            .logo { font-size: 2.5rem; }
+            .question-text { font-size: 1.3rem; }
+            .option-btn { font-size: 1.1rem; padding: 12px; }
+            .quiz-card { padding: 25px 15px; }
+            .menu-btn { font-size: 1.2rem; padding: 15px;}
         }
     </style>
 </head>
 <body>
 
-    <!-- الشاشة الرئيسية -->
-    <div id="home-screen">
-        <div class="main-logo">LoRD Academy</div>
-        <div class="academy-subtitle"> إعداد: علي جلال</div>
+    <div class="container">
+        <div class="logo">LoRD Academy</div>
+        <div class="subtitle" id="main-subtitle">منصة امتحانات المفاهيم اللغوية والأدبية</div>
         
-        <div class="menu-grid">
-            <button class="exam-card-btn" onclick="startQuiz('learning')">
-                اختبار مادة التعلم
-                <span>60 سؤالاً شاملاً</span>
-            </button>
-            <button class="exam-card-btn" onclick="startQuiz('pavlov')">
-                نظرية بافلوف
-                <span>الاشتراط الكلاسيكي - 60 سؤالاً</span>
-            </button>
-            <button class="exam-card-btn" onclick="startQuiz('thorndike')">
-                نظرية ثورندايك
-                <span>المحاولة والخطأ - 60 سؤالاً</span>
-            </button>
-            <button class="exam-card-btn" onclick="startQuiz('skinner')">
-                نظرية سكينر
-                <span>الاشتراط الإجرائي - 60 سؤالاً</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- شاشة الاختبار -->
-    <div id="quiz-screen">
-        <div class="top-nav">
-            <div id="quiz-title-display" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-gold);"></div>
-            <button class="back-home-btn" onclick="returnToHome()">الرئيسية</button>
+        <!-- القائمة الرئيسية -->
+        <div id="main-menu">
+            <button class="menu-btn" onclick="startQuiz('ch1', 'امتحان الفصل الأول: التواصل اللغوي')">امتحان الفصل الأول</button>
+            <button class="menu-btn" onclick="startQuiz('ch2', 'امتحان الفصل الثاني: دورة التعلم والأداء اللغوي')">امتحان الفصل الثاني</button>
+            <button class="menu-btn" onclick="startQuiz('ch3', 'امتحان الفصل الثالث: المعاقون سمعياً والوعي الديني')">امتحان الفصل الثالث</button>
         </div>
 
-        <div id="quiz-ui" class="quiz-container">
-            <div class="progress-container">
-                <div class="progress-bar" id="bar"></div>
+        <!-- واجهة الاختبار -->
+        <div id="quiz-ui">
+            <div id="progress-text" class="progress-text">السؤال 1 من 60</div>
+            
+            <div class="quiz-wrapper">
+                <div id="quiz-card" class="quiz-card">
+                    <div id="question-type" class="question-type"></div>
+                    <div id="question-text" class="question-text">جاري تحميل السؤال...</div>
+                    <div id="options-container" class="options-container"></div>
+                </div>
             </div>
-            <div class="q-meta" id="q-count">سؤال 1 من 60</div>
-            <div class="q-text" id="q-text">جاري تحميل السؤال...</div>
-            <div class="options-list" id="options-box"></div>
-            <div class="exp-box" id="exp-box"></div>
-            <button id="next-btn" onclick="handleNext()">السؤال التالي ⮕</button>
+            
+            <div class="back-nav" onclick="showMainMenu()">رجوع للقائمة الرئيسية</div>
         </div>
 
-        <!-- شاشة النتيجة النهائية -->
-        <div id="result-screen" class="quiz-container">
-            <h2 style="color: var(--primary-gold); font-size: 2.5rem;">اكتمل الاختبار!</h2>
-            <div class="result-circle" id="final-res">0/60</div>
-            <p id="res-msg" style="font-size: 1.5rem; margin-bottom: 30px;"></p>
-            <div style="display: flex; gap: 20px;">
-                <button class="exam-card-btn" style="flex: 1; padding: 20px;" onclick="startQuiz(currentQuizKey)">إعادة الاختبار</button>
-                <button class="exam-card-btn" style="flex: 1; padding: 20px; background: none;" onclick="returnToHome()">الرئيسية</button>
+        <!-- شاشة النتيجة -->
+        <div id="result-screen">
+            <h2>انتهى الاختبار الملكي!</h2>
+            <p>لقد أتممت التحدي، نتيجتك هي:</p>
+            <p><span id="score-text" class="score-highlight"></span> من 60</p>
+            
+            <div class="action-btns">
+                <button class="action-btn" onclick="restartCurrentQuiz()">إعادة الاختبار</button>
+                <button class="action-btn secondary" onclick="showMainMenu()">القائمة الرئيسية</button>
             </div>
         </div>
     </div>
-
-    <footer>
-        &copy; 2024 جميع الحقوق محفوظة لـ Lord Academy<br>
-        إعداد وتطوير: علي جلال
-    </footer>
 
     <script>
-        // دمج كافة البيانات من الملفات الأربعة
-        const database = {
-            learning: {
-                title: "مادة التعلم العام",
-                questions: [
-                    { q: "يشير مصطلح ________ إلى تغيرات شبه دائمة في بنية وسلوك الكائن مرتبطة بالعمر الزمني.", options: ["التعلم", "الارتقاء", "النضج", "الأداء"], correct: "الارتقاء", exp: "الارتقاء يرتبط ارتباطاً منتظماً بالعمر الزمني ويوصف بأنه ارتقائي إذا ارتبط بالعمر." },
-                    { q: "ما هو المفهوم الذي يشير إلى عوامل الفطرة والتغيرات البيولوجية الناتجة عن الوراثة؟", options: ["الارتقاء", "النمو", "النضج", "التدريب"], correct: "النضج", exp: "النضج يمثل عوامل الفطرة والتغيرات البيولوجية والفسيولوجية الناتجة عن الوراثة." },
-                    { q: "التعلم هو تغير ________ في السلوك ناتج عن الخبرة والممارسة.", options: ["مؤقت", "ثابت نسبياً", "لحظي", "فطري"], correct: "ثابت نسبياً", exp: "التعلم يتميز بأنه ثبات نسبي غير مطلق، حيث قد ينسى الفرد أو يطور خبراته." },
-                    { q: "أي من التالي لا يعتبر من نتائج التعلم حسب النص؟", options: ["المهارات", "الاتجاهات", "القيم", "الطول الجسمي"], correct: "الطول الجسمي", exp: "الطول الجسمي نتاج نضج بيولوجي وليس تعلماً ناتجاً عن الممارسة." },
-                    { q: "الزيادة الإضافية في مقدار الخاصية السلوكية التي تتخذ صورة التحسن تسمى:", options: ["النضج", "النمو", "التعب", "الارتقاء"], correct: "النمو", exp: "النمو يقتصر على التغيرات التي تتخذ صورة التحسن أو التقدم أو الزيادة." },
-                    { q: "العادة هي استعداد مكتسب لأداء عمل بطريقة ________.", options: ["بطيئة", "آلية سريعة", "مجهدة", "مترددة"], correct: "آلية سريعة", exp: "العادة تتميز بالأداء الآلي السريع الدقيق الذي لا يتطلب مجهوداً كبيراً." },
-                    { q: "صاحب مقولة أن 'الرغبة في متابعة التعلم' هي أهم اتجاه نفسي هو:", options: ["جانييه", "ثورنديك", "ديوي", "ماسلو"], correct: "ديوي", exp: "يرى جون ديوي أن أهم اتجاه نفسي هو الرغبة في متابعة التعلم." },
-                    { q: "المهارات هي عادات حركية يقصد بها تحقيق غايات ________.", options: ["شخصية فقط", "اجتماعية", "فطرية", "عشوائية"], correct: "اجتماعية", exp: "المهارات تهدف لتحقيق غايات اجتماعية مثل مهارة الكتابة أو قيادة السيارة." },
-                    { q: "تعريف 'جانييه' للتعلم يركز على أنه واقعة تحدث عند توفر ________ يؤدي لتغير الأداء.", options: ["نضج", "منبه", "تعب", "مرض"], correct: "منبه", exp: "عرف جانييه التعلم بأنه واقعة تحدث عند توفر منبه يؤدي لتغير في الأداء." },
-                    { q: "التعلم في علم النفس يعتبر متغيراً ________ بين المنبه والاستجابة.", options: ["مستقلاً", "تابعاً", "وسيطاً", "خارجياً"], correct: "وسيطاً", exp: "التعلم عملية مفترضة نظرياً تقع بين المنبه والاستجابة وتسمى متغيراً وسيطاً." },
-                    { q: "النشاط التعليمي المقصود الذي تقوم به المؤسسات يسمى:", options: ["التعلم", "التعليم", "التدريس", "النضج"], correct: "التدريس", exp: "التدريس حالة خاصة من التعليم، وهو نشاط مقصود تقوم به المؤسسات." },
-                    { q: "في المراحل التعليمية الأولى، يغلب على الاستعداد العقلي الصبغة ________.", options: ["الخاصة", "العامة (الذكاء العام)", "الفنية", "الرياضية"], correct: "العامة (الذكاء العام)", exp: "في البداية يسود الذكاء العام، وتظهر القدرات الخاصة بوضوح في نهاية المرحلة الإعدادية." },
-                    { q: "أي من الحاجات التالية تقع في قاعدة هرم ماسلو؟", options: ["الأمن", "الحب", "الفسيولوجية", "تحقيق الذات"], correct: "الفسيولوجية", exp: "الحاجات الفسيولوجية (الجوع والعطش) هي قاعدة الهرم وأقوى الحاجات." },
-                    { q: "الحاجات الناشئة عن النمو في تقسيم ماسلو تشمل:", options: ["الحب", "الأمن", "المعرفية والجمالية", "الاحترام"], correct: "المعرفية والجمالية", exp: "حاجات النمو تشمل المعرفة والجمال وتحقيق الذات وتوجد في قمة الهرم." },
-                    { q: "الممارسة تختلف عن التكرار في أنها تكرار ________.", options: ["آلي", "معزز", "عشوائي", "سلبي"], correct: "معزز", exp: "الممارسة تكرار معزز يلاحظ فيه تحسن تدريجي في الأداء نتيجة التغذية الراجعة." },
-                    { q: "الممارسة ________ هي الأفضل غالباً في التعلم والتذكر طويل المدى.", options: ["المركزة", "الموزعة", "المفاجئة", "السريعة"], correct: "الموزعة", exp: "أثبتت الدراسات أن الممارسة الموزعة أفضل في التعلم والتذكر المرجأ." },
-                    { q: "القدرة على التحكم في عضلة المستقيم (الإخراج) تنضج عادة في الشهر:", options: ["الأول", "الثالث", "السابع أو الثامن", "العاشر"], correct: "السابع أو الثامن", exp: "تنضج هذه العضلة في الشهر السابع أو الثامن لارتباطها بنضج القشرة المخية." },
-                    { q: "العمليات الإرادية في جسم الإنسان مسؤولة عنها:", options: ["الغدد", "القشرة المخية", "العضلات فقط", "النخاع الشوكي"], correct: "القشرة المخية", exp: "القشرة المخية هي المسؤولة عن جميع العمليات الإرادية في جسم الإنسان." },
-                    { q: "النضج ________ هو وصول منظومة الخوف والغضب لمستوى مناسب لعمر الفرد.", options: ["البيولوجي", "العقلي", "الانفعالي", "الاجتماعي"], correct: "الانفعالي", exp: "النضج الانفعالي يتعلق بتطور المشاعر مثل الحب والكراهية والغيرة بشكل سوي." },
-                    { q: "الموظف الذي يتلعثم أمام رئيسه يعتبر غير ناضج ________.", options: ["عقلياً", "انفعالياً", "اجتماعياً", "بيولوجياً"], correct: "اجتماعياً", exp: "التلعثم أمام الرؤساء يُصنف كمظهر من مظاهر عدم النضج الاجتماعي." },
-                    { q: "أي مما يلي يعد من شروط التعلم الأساسية؟", options: ["الدافعية", "الممارسة", "النضج", "جميع ما سبق"], correct: "جميع ما سبق", exp: "شروط التعلم هي الدافعية والممارسة والنضج." },
-                    { q: "تعريف ثورنديك للتعلم هو أنه سلسلة من التغيرات في ________.", options: ["التفكير", "السلوك", "الجسم", "الوراثة"], correct: "السلوك", exp: "عرف ثورنديك التعلم بأنه سلسلة من التغيرات في سلوك الإنسان." },
-                    { q: "الممارسة الموزعة تناسب بشكل أكبر تلاميذ المرحلة ________.", options: ["الجامعية", "الثانوية", "الابتدائية", "الدراسات العليا"], correct: "الابتدائية", exp: "الممارسة الموزعة تناسب أعمار تلاميذ المرحلة الابتدائية وتسهل التعلم القائم على المعنى." },
-                    { q: "من وظائف الممارسة أنها تمنع ________ الأعمال الفرعية في المهارة.", options: ["تحسن", "انطفاء ونسيان", "تكامل", "تعزيز"], correct: "انطفاء ونسيان", exp: "تساعد الممارسة على استمرار الارتباطات ومنع انطفاء المهارات الفرعية." },
-                    { q: "العلاقة بين قوة الدافع والطاقة المبذولة في السلوك هي علاقة ________.", options: ["عكسية", "طردية", "منعدمة", "ضعيفة"], correct: "طردية", exp: "توجد علاقة طردية؛ فكلما زاد الدافع زادت الطاقة المبذولة لتحقيق الهدف." },
-                    { q: "الحوافز هي مثيرات ________ تجعل الكائن مستعداً للاستجابة.", options: ["خارجية", "داخلية عضوية", "اجتماعية", "ثقافية"], correct: "داخلية عضوية", exp: "الحوافز (Incentives) هي مثيرات داخلية عضوية مثل الجوع والعطش." },
-                    { q: "البواعث هي موضوعات في البيئة ________ تهدف لإزالة التوتر.", options: ["الداخلية", "الخارجية", "العقلية", "الوراثية"], correct: "الخارجية", exp: "البواعث هي أشياء خارجية (مثل الطعام) تقابل الحوافز الداخلية (مثل الجوع)." },
-                    { q: "يعد 'التعلم' عملية لا يمكن ملاحظتها مباشرة بل نستدل عليها من ________.", options: ["الذكاء", "الأداء (السلوك)", "الوراثة", "العمر"], correct: "الأداء (السلوك)", exp: "نحن لا نرى التعلم مباشرة بل نلاحظ التغيرات في السلوك (الأداء)." },
-                    { q: "تعتبر 'اللزمات' (مثل قرض الأظافر) نوعاً من التعلم الذي ________.", options: ["يسهل التوافق", "يعوق التوافق", "فطري", "مؤقت"], correct: "يعوق التوافق", exp: "اللزمات حركات آلية متعلمة قد تعوق توافق الفرد مع المجتمع." },
-                    { q: "القدرة على التعلم هي أحد التعريفات الشائعة لـ ________.", options: ["النمو", "الذكاء", "الارتقاء", "النضج"], correct: "الذكاء", exp: "يرتبط التعلم بالذكاء ارتباطاً وثيقاً، ومن تعريفات الذكاء أنه القدرة على التعلم." },
-                    { q: "النضج عملية منتظمة ومستمرة تحدث مستقلة نسبياً عن التدريب.", options: ["صح", "خطأ"], correct: "صح", exp: "النضج يعتمد على العوامل الوراثية والفطرة ويحدث حتى دون تدريب." },
-                    { q: "يتعلم الإنسان من المدرسة وحدها.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الإنسان يتعلم من المدرسة والنادي والشارع والتلفزيون ومن المهد إلى اللحد." },
-                    { q: "مفهوم التعلم يقتصر فقط على اكتساب العادات الطيبة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعلم يشمل اكتساب كل العادات، سواء كانت حميدة أو ضارة." },
-                    { q: "النمو يقتصر على التغيرات التي تتخذ صورة التحسن أو الزيادة.", options: ["صح", "خطأ"], correct: "صح", exp: "بهذا المعنى يصبح النمو جزءاً من مفهومي النضج والتعلم التقدمي." },
-                    { q: "مجرد حدوث النضج الجسمي يكون ضماناً كافياً لحدوث التعلم.", options: ["صح", "خطأ"], correct: "خطأ", exp: "النمو الجسمي شرط ضروري لكنه غير كافٍ بمفرده؛ فالتعلم يحتاج ممارسة." },
-                    { q: "الطفل قد يتعلم استجابة ما لكنه يظل غير قادر على أدائها بسبب ظروف معينة.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا يوضح الفرق بين التعلم (عملية داخلية) والأداء (سلوك ظاهر)." },
-                    { q: "الخوف من الكلاب نتيجة حادثة عارضة يعتبر نوعاً من التعلم غير المقصود.", options: ["صح", "خطأ"], correct: "صح", exp: "التعلم قد يكون مقصوداً (مدرسي) أو عارضاً غير مقصود." },
-                    { q: "العادات العقلية تشمل استخدام الأسلوب العلمي في التفكير.", options: ["صح", "خطأ"], correct: "صح", exp: "العادات أنواع منها الحركية واللفظية والعقلية والاجتماعية." },
-                    { q: "قرض القلم بالأسنان يعتبر مهارة حركية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "قرض القلم عادة وليس مهارة، لأن المهارة تهدف لغايات اجتماعية مفيدة." },
-                    { q: "المعلومات تشمل ذكريات الشخص الخاصة والقوانين العلمية التي يفهمها.", options: ["صح", "خطأ"], correct: "صح", exp: "المعلومات والمعاني تشتمل على الكلمات والتواريخ والقوانين والذكريات." },
-                    { q: "السلوك الاجتماعي يتمثل فيما يتعلمه الشخص من ميول واتجاهات وقيم.", options: ["صح", "خطأ"], correct: "صح", exp: "التفاعل مع الجماعة يولد تعلماً اجتماعياً في شكل ميول وعواطف." },
-                    { q: "التعلم يؤدي إلى تحوير الدوافع الفطرية واكتساب دوافع اجتماعية.", options: ["صح", "خطأ"], correct: "صح", exp: "التعلم يؤثر في الدوافع والانفعالات ويطبعها بطابع اجتماعي." },
-                    { q: "التغير الناتج عن التعب أو المرض يعتبر تعلماً.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعلم يجب أن يكون ثابتاً نسبياً، أما التعب والمرض فتغيرات عارضة تزول بزوال السبب." },
-                    { q: "عرف 'كمبل' التعلم بأنه تغير ثابت في إمكانية السلوك نتيجة للممارسة المعززة.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو التعريف الدقيق الذي وضعه كمبل للتعلم." },
-                    { q: "التعلم والأداء هما وجهان لعملة واحدة ويعنيان نفس الشيء.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعلم متغير وسيط داخلي، والأداء هو المتغير التابع الظاهر." },
-                    { q: "التعليم هو النشاط الذي يقوم به المتعلم نفسه لاكتساب المهارات.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعلم هو نشاط المتعلم، أما التعليم فهو المهمة الملقاة على عاتق المعلم لمساعدة المتعلم." },
-                    { q: "التلميذ ذو الاستعداد العقلي المرتفع يكون أسرع في تحصيله.", options: ["صح", "خطأ"], correct: "صح", exp: "الاستعدادات العقلية عامل ذاتي حاسم في سرعة ومستوى التحصيل." },
-                    { q: "تظهر الفروق الفردية في الاستعدادات الخاصة بوضوح في المرحلة الابتدائية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الفروق الخاصة تظهر وتتمايز بوضوح في نهاية المرحلة الإعدادية وبداية الثانوية." },
-                    { q: "النجاح قد يدفع بعض التلاميذ إلى التواكل والاستهتار.", options: ["صح", "خطأ"], correct: "صح", exp: "تأثير النجاح والفشل يختلف باختلاف استعدادات التلاميذ المزاجية." },
-                    { q: "الشعور بالأمن وفقدان الثقة بالنفس ليس لهما أثر على التحصيل.", options: ["صح", "خطأ"], correct: "خطأ", exp: "تكامل الشخصية والشعور بالأمن له أثر إيجابي كبير على التحصيل الدراسي." },
-                    { q: "الدافع هو حالة نفسية فيسيولوجية تهدف لخفض حالة التوتر.", options: ["صح", "خطأ"], correct: "صح", exp: "الدوافع تعمل على استثارة السلوك وتوجيهه للوصول لحالة الاتزان." },
-                    { q: "حسب ماسلو، يسعى الفرد لإشباع حاجات الحب قبل إشباع حاجات الأمن.", options: ["صح", "خطأ"], correct: "خطأ", exp: "لا يسعى الفرد لإشباع الحب والانتماء إلا بعد إشباع الحاجات الفسيولوجية والأمن أولاً." },
-                    { q: "الفرد يتعلم دائماً تحت تأثير دافع واحد فقط.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الفرد يتعلم عادة تحت تأثير مجموعة متداخلة من الدوافع." },
-                    { q: "الممارسة وحدها كافية لتحقيق التعلم دون الحاجة للدافعية أو النضج.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الممارسة لا تحقق فاعلية دون توفر الشروط الأخرى كالدافعية والنضج." },
-                    { q: "الممارسة المركزة تكون أكثر فاعلية في حالة التذكر المرجأ (البعيد).", options: ["صح", "خطأ"], correct: "خطأ", exp: "الممارسة الموزعة هي الأفضل للتذكر المرجأ، أما المركزة قد تفيد في التذكر الفوري." },
-                    { q: "النضج عملية تقدمية تحدث حتى أثناء نوم الكائن الحي.", options: ["صح", "خطأ"], correct: "صح", exp: "النضج عملية بيولوجية داخلية لا تعتمد على إرادة الكائن أو نشاطه." },
-                    { q: "محاولة تعليم الطفل مهارة قبل نضج الجزء المسؤول عنها يعتبر إهداراً للوقت.", options: ["صح", "خطأ"], correct: "صح", exp: "التعلم يجب أن ينتظر النضج البيولوجي والعقلي المناسب للمهمة." },
-                    { q: "اشتغال تلاميذ المرحلة الابتدائية بالتطريز مفيد جداً لصحتهم.", options: ["صح", "خطأ"], correct: "خطأ", exp: "يسبب ضرراً لأن حاسة الإبصار لم تصل للنمو الفسيولوجي الملائم لهذا العمل الدقيق." },
-                    { q: "المخ البشري سلبي تماماً في استقبال المعلومات.", options: ["صح", "خطأ"], correct: "خطأ", exp: "المخ جزء حيوي ودينامي يقوم بتفاعل المدخلات وتركيبها وتحليلها." },
-                    { q: "الطفل في سن الثالثة الذي لا يسلم على الضيوف يعتبر غير ناضج اجتماعياً.", options: ["صح", "خطأ"], correct: "خطأ", exp: "في سن الثالثة لا يعتبر ذلك نقصاً، لكنه يعتبر كذلك إذا كان في سن العاشرة." }
-                ]
-            },
-            pavlov: {
-                title: "نظرية بافلوف - الاشتراط التقليدي",
-                questions: [
-                    { q: "العالم الروسي الذي اكتشف مبادئ الاشتراط التقليدي هو:", options: ["ثورنديك", "بافلوف", "ماسلو", "جانييه"], correct: "بافلوف", exp: "إيفان بافلوف هو العالم الروسي الذي طور إجراءات الاشتراط الكلاسيكي من خلال أبحاثه على الجهاز الهضمي." },
-                    { q: "المثير الذي كان محايداً وأصبح قادراً على استثارة الاستجابة يسمى:", options: ["مثير طبيعي", "مثير شرطي", "مثير غير شرطي", "استجابة شرطية"], correct: "مثير شرطي", exp: "المثير الشرطي هو مثير محايد في الأصل يكتسب القدرة على إحداث الاستجابة بعد اقترانه بالمثير الطبيعي." },
-                    { q: "في تجربة بافلوف، يمثل 'مسحوق اللحم' المثير:", options: ["الشرطي", "المحايد", "غير الشرطي (الطبيعي)", "الثانوي"], correct: "غير الشرطي (الطبيعي)", exp: "مسحوق اللحم هو المثير الطبيعي لأن له علاقة وظيفية فطرية بإفراز اللعاب." },
-                    { q: "الظاهرة التي تعود فيها الاستجابة للظهور بعد فترة راحة عقب الانطفاء تسمى:", options: ["الاكتساب", "التعميم", "الاسترجاع التلقائي", "التمايز"], correct: "الاسترجاع التلقائي", exp: "الاسترجاع التلقائي هو عودة الاستجابة الشرطية للظهور عند تقديم المثير الشرطي بمفرده بعد فترة راحة." },
-                    { q: "يحدث الانطفاء التجريبي نتيجة تقديم المثير الشرطي دون ________ بشكل متكرر.", options: ["المثير الحيادي", "المثير غير الشرطي (المعزز)", "الاستجابة الشرطية", "التمييز"], correct: "المثير غير الشرطي (المعزز)", exp: "عند تقديم المثير الشرطي (الجرس) وحده دون المثير الطبيعي (الطعام)، تضعف الاستجابة حتى تنطفئ." },
-                    { q: "الاستجابة لمثيرات مشابهة للمثير الأصلي تسمى ظاهرة:", options: ["التمييز", "التعميم", "الاكتساب", "التدعيم"], correct: "التعميم", exp: "التعميم هو استدعاء نفس الاستجابة عند التعرض لمثيرات تشبه المثير الشرطي الأصلي." },
-                    { q: "الوقت المثالي الذي اقترحه بافلوف بين تقديم المثير الشرطي وغير الشرطي هو:", options: ["٥ ثوانٍ", "دقيقة واحدة", "نصف ثانية", "ثانيتين"], correct: "نصف ثانية", exp: "أظهرت النتائج أن تقديم المثير غير الشرطي بعد الشرطي بنصف ثانية يسهل تكوين الرابطة." },
-                    { q: "الاشتراط الذي يسبق فيه تقديم المثير الطبيعي تقديم المثير الشرطي يسمى:", options: ["الاشتراط المرجأ", "الاشتراط الارتجاعي", "الاشتراط المتزامن", "الاشتراط الكلاسيكي"], correct: "الاشتراط الارتجاعي", exp: "الاشتراط الارتجاعي هو تقديم المثير الطبيعي (م ط) قبل المثير الشرطي (م ش)." },
-                    { q: "يعتبر 'المدح' في البيئة المدرسية نوعاً من المعززات:", options: ["الأولية", "الثانوية", "الشرطية المنفرة", "الفطرية"], correct: "الثانوية", exp: "يستخدم المدح كمعزز ثانوي لتعزيز الاستجابات الصحيحة وزيادة التحصيل الدراسي." },
-                    { q: "علاج 'التبول اللاإرادي' عند ماورر يعتمد على اقتران صوت الجرس بـ:", options: ["الأمل", "امتلاء المثانة", "النوم العميق", "الاستيقاظ المبكر"], correct: "امتلاء المثانة", exp: "يصبح امتلاء المثانة مثيراً شرطياً يؤدي للاستيقاظ (استجابة شرطية) بعد اقترانه بجرس الجهاز." },
-                    { q: "القدرة على الاستجابة للمثير المعزز فقط دون المثيرات المشابهة تسمى:", options: ["التعميم", "التمايز (التمييز)", "الانطفاء", "الاسترجاع"], correct: "التمايز (التمييز)", exp: "التمييز عملية متقدمة تمكن الكائن من الاستجابة فقط للمثير الذي يتبعه تعزيز." },
-                    { q: "تقديم الطعام بعد الجرس مباشرة يسمى في نظرية بافلوف بـ:", options: ["التدعيم", "الانطفاء", "التعميم", "التمييز"], correct: "التدعيم", exp: "التدعيم هو تقديم المثير غير الشرطي عقب المثير الشرطي مباشرة لتقوية الرابطة." },
-                    { q: "يوصف اكتساب الاستجابة في الاشتراط التقليدي بأنه ________.", options: ["إرادي", "لا إرادي", "تفكيري", "مخطط له من المتعلم"], correct: "لا إرادي", exp: "لأن الاستجابة تجبر على الحدوث نتيجة ارتباط المثيرات، وليس للفرد اختيار فيها." },
-                    { q: "استخدام الصور مع الكلمات للأطفال في المناهج يعتمد على مبدأ:", options: ["الانطفاء", "الاقتران", "التمايز", "الاسترجاع"], correct: "الاقتران", exp: "يتم إشراط الكلمة (مثير شرطي) بالصورة (مثير غير شرطي) لتكتسب الكلمة معنى الصورة." },
-                    { q: "في تجربة بافلوف، الاستجابة 'اللعابية' الناتجة عن 'الجرس وحده' هي:", options: ["استجابة غير شرطية", "استجابة شرطية", "مثير حيادي", "مثير غير شرطي"], correct: "استجابة شرطية", exp: "تسمى شرطية لأنها حدثت بوجود المثير الشرطي (الجرس) فقط." },
-                    { q: "الاشتراط الذي يحدث فيه تقديم المثيرين (م ش) و (م ط) في نفس الوقت يسمى:", options: ["المرجأ", "المتزامن", "الارتجاعي", "الثانوي"], correct: "المتزامن", exp: "الاشتراط المتزامن هو تقديم المثير الشرطي والطبيعي معاً بدون فاصل زمني." },
-                    { q: "يعد 'التعريض التدريجي' علاجاً فعالاً لـ:", options: ["الذكاء", "مخاوف المدرسة", "النسيان", "المهارات الحركية"], correct: "مخاوف المدرسة", exp: "يتم تقليل قلق الانفصال تدريجياً بربط المدرسة بمثيرات سارة." },
-                    { q: "مبدأ 'الكف المشترك' يعني أن الجسم لا يمكنه الشعور بـ ________ في آن واحد.", options: ["الجوع والعطش", "الاسترخاء والخوف", "الحب والكراهية", "النوم واليقظة"], correct: "الاسترخاء والخوف", exp: "بما أن الاسترخاء أقوى، فإنه يطرد الخوف عند اقترانهما." },
-                    { q: "الاستجابات الشرطية مع التعزيز ________ تكون أكثر مقاومة للانطفاء.", options: ["المستمر", "الجزئي", "السلبي", "المتأخر"], correct: "الجزئي", exp: "التعزيز الجزئي (تقديم الطعام في بعض المحاولات) يجعل الاستجابة أقوى في مواجهة الانطفاء." },
-                    { q: "ربط حصة الرياضيات بأنشطة ترفيهية يهدف لتشكيل ________.", options: ["عادات سلبية", "اتجاهات إيجابية", "انطفاء سريع", "تمييز بصري"], correct: "اتجاهات إيجابية", exp: "ربط المادة بمثيرات محببة يجعل الطالب يشعر بالارتياح بمجرد بدء الحصة." },
-                    { q: "إجراء اختبارات قصيرة 'بدون درجات' يهدف لعمل ________ لقلق الاختبارات.", options: ["تدعيم", "انطفاء", "تعميم", "اكتساب"], correct: "انطفاء", exp: "تكرار ورقة الامتحان دون 'عقاب أو ضغط' يكسر الارتباط الشرطي مع الخوف." },
-                    { q: "صوت الجرس 'قبل' إجراء التجربة يسمى:", options: ["مثير شرطي", "مثير حيادي", "استجابة شرطية", "مثير طبيعي"], correct: "مثير حيادي", exp: "يسمى حيادياً لأنه لا يمكن له بمفرده إحداث الاستجابة قبل الاقتران." },
-                    { q: "يستخدم المعلم 'رفع اليد' كـ ________ لضبط صمت الطلاب.", options: ["مثير طبيعي", "مثير شرطي", "استجابة غير شرطية", "معزز أولي"], correct: "مثير شرطي", exp: "يصبح رفع اليد مثيراً شرطياً لاستجابة الصمت بعد تعوده." },
-                    { q: "تكوين استجابة جديدة مرغوبة تتعارض مع استجابة الخوف يسمى:", options: ["الاشتراط المضاد", "التعميم", "الانطفاء التجريبي", "الاسترجاع"], correct: "الاشتراط المضاد", exp: "الاشتراط المضاد هو بناء اتجاه سار يطرد الاستجابة المنفرة الأصلية." },
-                    { q: "كلما اقترن المثير الشرطي بالمثير الطبيعي لمرات 'أكثر' كان الاشتراط:", options: ["أضعف", "أقوى", "أسرع في الانطفاء", "أقل تأثيراً"], correct: "أقوى", exp: "قوة الاشتراط ترتبط طردياً بعدد مرات الاقتران والتدريب." },
-                    { q: "تعلم نطق الكلمات عبر البطاقات المصورة يعتمد على نظرية بافلوف في:", options: ["التمييز", "الاقتران", "الاسترجاع", "الانطفاء"], correct: "الاقتران", exp: "يقترن المثير البصري (الصورة) بالمثير اللغوي (الكلمة) ليحدث التعلم." },
-                    { q: "الخوف من 'المنصة' عند الإلقاء يرجع لارتباطها بمشاعر:", options: ["الفخر", "الإحراج أو الفشل", "السرور", "الثقة"], correct: "الإحراج أو الفشل", exp: "تصبح المنصة مثيراً شرطياً للخوف نتيجة تجارب سابقة سلبية." },
-                    { q: "يساعد 'النجاح المتدرج' في المادة الصعبة على ربطها بـ:", options: ["شعور العجز", "الشعور بالإنجاز", "الخوف المستمر", "الانطفاء التلقائي"], correct: "الشعور بالإنجاز", exp: "المهام السهلة في البداية تبني رابطة إيجابية مع المادة." },
-                    { q: "عندما يفرق الطالب بين جرس الفسحة وجرس الحصة، فهذا يمثل:", options: ["التعميم", "التمييز", "الاكتساب", "التدعيم"], correct: "التمييز", exp: "التمييز هو القدرة على الاستجابة للمثير المعين دون المثيرات المشابهة." },
-                    { q: "الاستجابة غير الشرطية في تجربة بافلوف هي:", options: ["اللعاب الناتج عن الجرس", "اللعاب الناتج عن الطعام", "صوت الجرس", "مسحوق اللحم"], correct: "اللعاب الناتج عن الطعام", exp: "هي غير شرطية لأنها فطرية وطبيعية ناتجة عن مثير طبيعي." },
-                    { q: "الاستجابات الشرطية مع التعزيز المستمر أكثر مقاومة للانطفاء من التعزيز الجزئي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعزيز الجزئي هو الأكثر مقاومة للانطفاء." },
-                    { q: "الانطفاء يؤدي إلى زوال الاستجابة الشرطية بصورة نهائية ومطلقة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "لا يزول نهائياً، والدليل هو ظاهرة الاسترجاع التلقائي بعد فترة راحة." },
-                    { q: "في الاشتراط المرجأ، يسبق تقديم المثير الشرطي تقديم المثير الطبيعي.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو الترتيب التقليدي الفعال في الاشتراط." },
-                    { q: "لا يختلف شكل الاستجابة الشرطية عن الاستجابة غير الشرطية.", options: ["صح", "خطأ"], correct: "صح", exp: "الاستجابتان متماثلتان في الشكل (إفراز لعاب)، والفرق في المثير المسبب لكل منهما." },
-                    { q: "العلاقة بين عدد مرات الاقتران وقوة الاشتراط هي علاقة عكسية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "العلاقة طردية؛ كلما زاد الاقتران زادت قوة الرابطة." },
-                    { q: "المثير الحيادي لا يحدث الاستجابة الطبيعية دون إشراط سابق.", options: ["صح", "خطأ"], correct: "صح", exp: "صوت الجرس بمفرده لا يسبب سيل اللعاب قبل أن يقترن بالطعام." },
-                    { q: "الاشتراط الارتجاعي يعتبر أقوى أنواع الاشتراط الكلاسيكي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الاشتراط الارتجاعي (US قبل CS) غالباً ما يكون ضعيفاً أو غير فعال." },
-                    { q: "يمكن استخدام مبادئ بافلوف في علاج المخاوف المرضية مثل فوبيا الأماكن المغلقة.", options: ["صح", "خطأ"], correct: "صح", exp: "عبر تقنيات مثل الاسترخاء العضلي والتعريض التدريجي." },
-                    { q: "التعميم يعني استجابة الفرد للمثير الأصلي فقط.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعميم هو الاستجابة للمثير الأصلي والمثيرات المشابهة له." },
-                    { q: "التمييز يعد عملية متقدمة على عملية التعميم.", options: ["صح", "خطأ"], correct: "صح", exp: "التمييز يتطلب من الكائن التفريق بدقة بين المثيرات المعززة وغير المعززة." },
-                    { q: "يعتبر بافلوف أول من اكتشف مبادئ الاشتراط التقليدي.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، هو الرائد في هذا المجال ولذلك يسمى 'الاشتراط البافلوفي'." },
-                    { q: "سلوك الطفل الذي يكره مادة بسبب معلم قاسٍ هو استجابة شرطية.", options: ["صح", "خطأ"], correct: "صح", exp: "أصبحت المادة مثيراً شرطياً للانفعال السلبي نتيجة الاقتران بالمعلم." },
-                    { q: "زيادة الفاصل الزمني بين المثيرين تؤدي إلى تسريع حدوث الرابطة الشرطية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "زيادة الفترة الزمنية تؤدي غالباً إلى تأخر أو فشل حدوث الرابطة." },
-                    { q: "تقديم الطعام يعمل على 'تدعيم' الاستجابة الشرطية.", options: ["صح", "خطأ"], correct: "صح", exp: "التدعيم هو المحافظة على قوة الاستجابة بمنع انطفائها." },
-                    { q: "تزيين الفصول بالألوان يجعل الوجود في القاعة يبعث على الراحة النفسية.", options: ["صح", "خطأ"], correct: "صح", exp: "يتم ربط القاعة (مثير محايد) بالألوان المبهجة (مثير سار)." },
-                    { q: "جرس الانصراف في المدرسة هو مثير غير شرطي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "هو مثير شرطي تعلم الطلاب الاستجابة له بالرحيل." },
-                    { q: "الاشتراط المتزامن يحدث بتقديم الجرس بعد مسحوق اللحم بفاصل طويل.", options: ["صح", "خطأ"], correct: "خطأ", exp: "المتزامن يعني تقديمهما معاً في نفس اللحظة." },
-                    { q: "يعد تعلم أسماء الأفراد وارتباطهم بالأماكن من تطبيقات مبادئ الاقتران.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، التعلم الإنساني يعتمد كثيراً على تكوين هذه الروابط." },
-                    { q: "لا يمكن الاعتماد على مبادئ الاشتراط الكلاسيكي في ضبط المواقف السلوكية للإنسان.", options: ["صح", "خطأ"], correct: "خطأ", exp: "بينت الدراسات إمكانية تطبيقها في مجالات واسعة كالتربية والعلاج النفسي." },
-                    { q: "اللوم يعتبر مثيراً ثانوياً منفراً لدى تلاميذ المدرسة الابتدائية.", options: ["صح", "خطأ"], correct: "صح", exp: "حسب دراسة 'كنيدي وولكت'، اللوم يعمل كمثير منفر يؤثر سلباً على التحصيل." },
-                    { q: "قلق الانفصال عن الأم يعتبر مثيراً غير شرطي (طبيعي) يولد القلق.", options: ["صح", "خطأ"], correct: "صح", exp: "الانفصال مثير طبيعي يسبب استجابة قلق فطرية عند الأطفال." },
-                    { q: "في علاج التبول اللاإرادي، يعتبر امتلاء المثانة المثير غير الشرطي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "امتلاء المثانة هو المثير الشرطي، وجرس الجهاز هو المثير غير الشرطي الذي يسبب الاستيقاظ." },
-                    { q: "التكرار ضروري جداً لحدوث التعلم في نظرية بافلوف.", options: ["صح", "خطأ"], correct: "صح", exp: "ينبغي تكرار اقتران المثير الشرطي بالطبيعي لعدة محاولات لتثبيت التعلم." },
-                    { q: "التعميم يساعدنا على تفسير استجاباتنا للمواقف الجديدة المشابهة لمواقف سابقة.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو الجانب الإيجابي للتعميم في نقل أثر التعلم." },
-                    { q: "إذا تكررت مرات الانطفاء والاسترجاع، فإن الاسترجاع التلقائي يقوى تدريجياً.", options: ["صح", "خطأ"], correct: "خطأ", exp: "يضعف الاسترجاع تدريجياً حتى يتلاشى نهائياً إذا لم يتم التدعيم." },
-                    { q: "استخدام الأغاني التعليمية يسهل استدعاء المعلومات اللغوية كمثيرات شرطية.", options: ["صح", "خطأ"], correct: "صح", exp: "اللحن الموسيقي يعمل كمثير يسهل الارتباط بالمعلومة." },
-                    { q: "الاستجابة الانفعالية تجاه وجه شخص معين قد تكون ناتجة عن اشراط سابق.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، الوجوه والأماكن قد تصبح مثيرات شرطية لانفعالاتنا." },
-                    { q: "الاشتراط المضاد يتضمن تقديم مثير غير شرطي 'سار' مع مثير الخوف.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، لإحداث استجابة جديدة مرغوبة تطرد الخوف." },
-                    { q: "مخاوف الفصل الدراسي (Classroom phobia) تنشأ دائماً من عوامل عضوية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "غالباً ما تكون ناتجة عن قلق الانفصال والاشراط السلبي بالمدرسة." },
-                    { q: "الاشتراط البافلوفي هو اسم آخر للاشتراط الكلاسيكي.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، يسمى كذلك اعترافاً بفضل بافلوف في اكتشافه." }
-                ]
-            },
-            thorndike: {
-                title: "نظرية ثورندايك - المحاولة والخطأ",
-                questions: [
-                    { q: "تعتبر نظرية ثورندايك في التعلم قائمة على تشكيل روابط عصبية بين:", options: ["المثير والاستجابة", "الفعل ورد الفعل", "العقل والجسد", "الوراثة والبيئة"], correct: "المثير والاستجابة", exp: "يرى ثورندايك أن التعلم هو عملية تشكيل وصلات عصبية بين المثيرات واستجاباتها من خلال المحاولة والخطأ." },
-                    { q: "ركز بافلوف في نظريته على المثير، بينما ركز ثورندايك على:", options: ["المتعلم", "الاستجابة ونتائجها", "البيئة الصفية", "الذكاء الفطري"], correct: "الاستجابة ونتائجها", exp: "ثورندايك اهتم بما يتبع الاستجابة من أثر (ارتياح أو ضيق) وهو ما يحدد قوة الرابطة." },
-                    { q: "ينص قانون الأثر على أن الرابطة تقوى إذا أتبع الاستجابة حالة:", options: ["تعب", "ارتياح", "ضيق", "إهمال"], correct: "ارتياح", exp: "حالة الارتياح بعد الاستجابة هي التي تعزز السيالات العصبية وتقوي الارتباط." },
-                    { q: "قانون التدريب عند ثورندايك ينقسم إلى جزئين هما:", options: ["الثواب والعقاب", "الاستعداد والأثر", "الاستعمال والإهمال", "المحاولة والخطأ"], correct: "الاستعمال والإهمال", exp: "الاستعمال يقوي الرابطة بالممارسة، والإهمال يضعفها بالتوقف." },
-                    { q: "عندما يواجه المتعلم موقفاً جديداً ويستخدم استجابات نجحت في مواقف سابقة، يسمى ذلك:", options: ["الاستجابة بالتماثل", "العناصر السائدة", "الاستعداد", "قانون الأثر"], correct: "الاستجابة بالتماثل", exp: "هذا من القوانين الثانوية حيث يميل المتعلم لاستخدام خبرات سابقة في مواقف مشابهة." },
-                    { q: "الفترة الزمنية التي تنقضي بين الاستجابة والتعزيز تسمى:", options: ["تأجيل التعزيز", "زمن الرجع", "الفاصل المرجأ", "الممارسة الموزعة"], correct: "تأجيل التعزيز", exp: "تأجيل التعزيز هو الوقت المستغرق بين صدور الاستجابة والحصول على المكافأة." },
-                    { q: "أي استجابة تتم من أجل الابتعاد عن مثير منفر موجود بالفعل تسمى استجابة:", options: ["وسيلية", "هروبية", "تجنبية", "عشوائية"], correct: "هروبية", exp: "الاستجابة الهروبية تهدف للابتعاد عن المثير المنفر القائم." },
-                    { q: "تسمى نظرية ثورندايك أحياناً بنظرية 'الوصلات العصبية' بسبب:", options: ["انتقال السيال العصبي للمخ", "استخدام الكهرباء", "الذكاء العالي", "تركيزها على الوراثة"], correct: "انتقال السيال العصبي للمخ", exp: "بسبب مسار المنبه من السطح الخارجي إلى الأعصاب ثم المراكز العصبية بالمخ." },
-                    { q: "في تجربة القط، كان 'الجزاء الحسن' يتمثل في:", options: ["الخروج فقط", "قطعة سمك أو لحم", "الراحة داخل القفص", "اللعب"], correct: "قطعة سمك أو لحم", exp: "كان الطعام يوضع خارج القفص كمعزز يشبع دافع الجوع لدى القط." },
-                    { q: "أول شرط من شروط تجارب ثورندايك هو وجود:", options: ["مشكلة (مثل الجوع)", "معلم", "كتاب", "زملاء"], correct: "مشكلة (مثل الجوع)", exp: "لابد من وجود حاجة أو مشكلة تحفز الكائن الحي على محاولة الحل." },
-                    { q: "يتم تسجيل النتائج في تجربة المحاولة والخطأ بصورة:", options: ["وصفية", "رقمية (الزمن والحركات)", "رسم فقط", "كلامية"], correct: "رقمية (الزمن والحركات)", exp: "اعتمد ثورندايك على تسجيل عدد المحاولات والزمن المستغرق في كل محاولة." },
-                    { q: "يتضح من منحنى التعلم أن الزمن في المحاولات الأولى يكون:", options: ["منخفضاً جداً", "ثابتاً", "مرتفعاً (التعلم بطيء)", "منعدماً"], correct: "مرتفعاً (التعلم بطيء)", exp: "البداية تتسم بكثرة الحركات العشوائية والزمن الطويل، ثم يتناقص تدريجياً." },
-                    { q: "الأثر في نظرية ثورندايك يعني حالة الإشباع أو الضيق التي ترافق:", options: ["المثير", "الاستجابة", "الذكاء", "الوراثة"], correct: "الاستجابة", exp: "الأثر هو النتيجة اللاحقة للاستجابة سواء كانت ناجحة أو فاشلة." },
-                    { q: "يعتقد ثورندايك أن التعلم لا يكون ارتباطات جديدة بل يعمل على:", options: ["إلغاء القديم", "تدعيم المسارات العصبية القائمة", "تغيير الجينات", "تحفيز العضلات"], correct: "تدعيم المسارات العصبية القائمة", exp: "التعلم يقوي المسارات العصبية الموجودة بالفعل في الجهاز العصبي." },
-                    { q: "تعديل رأي ثورندايك في قانون الأثر أدى إلى استنتاج أن ________ أكثر فعالية.", options: ["العقاب", "الثواب", "الإهمال", "التهديد"], correct: "الثواب", exp: "اكتشف لاحقاً أن الثواب يقوي الارتباط مباشرة بينما العقاب لا يضعفه بالضرورة." },
-                    { q: "حسب قانون الاستعداد، إذا استعدت الوحدة العصبية ولم توصل يشعر الكائن بـ:", options: ["ارتياح", "ضيق وتعب", "انزعاج مفاجئ", "لا شيء"], correct: "ضيق وتعب", exp: "منع الوحدة المستعدة من التوصيل يؤدي إلى حالة من عدم الرضا." },
-                    { q: "أكد ثورندايك أن التعلم القائم على ________ أكثر فاعلية من الإلقاء.", options: ["الاستماع", "الأداء والممارسة", "القراءة الصامتة", "الحفظ اللفظي"], correct: "الأداء والممارسة", exp: "الممارسة الفعلية للمحاولة والخطأ هي جوهر النمو التربوي في نظريته." },
-                    { q: "من التطبيقات التربوية، يجب التدرج في التعلم من:", options: ["الصعب للسهل", "السهل للصعب", "المركب للبسيط", "النظري للعملي"], correct: "السهل للصعب", exp: "التدرج يضمن حدوث نجاحات أولية تولد أثراً طيباً يشجع على الاستمرار." },
-                    { q: "انتقال أثر التدريب من الفصل للواقع يعتمد عند ثورندايك على نظرية:", options: ["التدريب الشكلي", "العناصر المتماثلة", "الذكاءات المتعددة", "النمو المعرفي"], correct: "العناصر المتماثلة", exp: "ينتقل التعلم بقدر وجود تشابه وعناصر مشتركة بين موقف التعلم والواقع." },
-                    { q: "لاحظ ثورندايك أن الحيوانات تتعلم بالتدريج وليس ________.", options: ["بالتكرار", "فجائياً", "بالمحاولة", "بالأداء"], correct: "فجائياً", exp: "التعلم عند ثورندايك تراكمي تدريجي يظهر في تناقص منحنى الزمن." },
-                    { q: "يجب القيام بـ ________ للاستجابات الخاطئة فوراً حتى لا تقوى بالممارسة.", options: ["تعزيز", "تصحيح", "إهمال", "تكرار"], correct: "تصحيح", exp: "الممارسة تقوي الروابط سواء كانت صحيحة أو خاطئة، لذا وجب التصحيح الفوري." },
-                    { q: "مهمة المعلم هي استثارة رغبة التلميذ في الاستجابة والاندفاع في:", options: ["الحفظ", "المحاولة والخطأ", "الهدوء", "التقليد"], correct: "المحاولة والخطأ", exp: "يجب إعطاء الطالب فرصة لبذل الجهد والمحاولة بنفسه." },
-                    { q: "قانون الاستعمال يعني أن الارتباط يزداد ويقوى مع ________.", options: ["الترك", "الممارسة (التكرار)", "الراحة", "التفكير"], correct: "الممارسة (التكرار)", exp: "الاستعمال الموجه والمعزز هو الذي يقوي الوصلات العصبية." },
-                    { q: "يرى ثورندايك أن 'الدافعية' عند الإنسان تتحدد مبدئياً من خلال:", options: ["المكافآت الخارجية", "الوراثة", "التأمل", "الأحلام"], correct: "المكافآت الخارجية", exp: "ركز ثورندايك على التعزيز الخارجي في تشكيل وإصدار الاستجابات." },
-                    { q: "منحنى التعلم يثبت أن الزمن المستغرق للحل ________ مع زيادة المحاولات.", options: ["يزداد", "يتناقص", "يبقى ثابتاً", "يتضاعف"], correct: "يتناقص", exp: "التناقص في الزمن دليل على حذف الأخطاء وتثبيت المحاولات الصحيحة." },
-                    { q: "الاستجابة التي تقي الكائن الحي من خبرة مثير منفر قبل وقوعه هي:", options: ["هروبية", "تجنبية", "عشوائية", "فطرية"], correct: "تجنبية", exp: "الاستجابة التجنبية تهدف لاتقاء المثير قبل أن يبدأ أثره." },
-                    { q: "العناصر السائدة تعني أن المتعلم ينتقي المثيرات ________ في الموقف.", options: ["الهامشية", "الهامة", "العشوائية", "الصعبة فقط"], correct: "الهامة", exp: "المتعلم لا يستجيب لكل شيء بل يركز على العناصر السائدة والمهمة للوصول للهدف." },
-                    { q: "تعليم الطفل المنطق يفيد فقط في حل مشكلات المنطق حسب نظرية:", options: ["التدريب الشكلي", "العناصر المتماثلة", "الأثر", "الاستعداد"], correct: "العناصر المتماثلة", exp: "ثورندايك يعارض فكرة أن تدريب العقل في مادة يقويه في كل المواد الأخرى آلياً." },
-                    { q: "التغذية الراجعة في الامتحانات تعتبر مهمة لأنها تمثل ________ فورياً.", options: ["عقاباً", "تعزيزاً أو تصحيحاً", "إهمالاً", "حملاً زائدة"], correct: "تعزيزاً أو تصحيحاً", exp: "تساعد التغذية الراجعة على معرفة النتائج وتثبيت الإجابات الصحيحة." },
-                    { q: "الارتباط المنطقي بين الاستجابة والنتيجة يجعل التعلم ________.", options: ["أبطأ", "أسرع وأقوى", "مستحيلاً", "عشوائياً"], correct: "أسرع وأقوى", exp: "الارتباطات ذات المعنى والمنطق تثبت في الذاكرة بشكل أفضل." },
-                    { q: "ركز بافلوف على الاستجابة، بينما ركز ثورندايك على المثير.", options: ["صح", "خطأ"], correct: "خطأ", exp: "العكس صحيح؛ بافلوف ركز على المثير، وثورندايك على الاستجابة ونتائجها." },
-                    { q: "قانون الأثر يرى أن الروابط تقوى بالحالة التي يتبعها ارتياح.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو جوهر قانون الأثر؛ النتيجة السارة تقوي السلوك." },
-                    { q: "الإهمال أو عدم الممارسة يضعف الروابط العصبية حسب قانون التدريب.", options: ["صح", "خطأ"], correct: "صح", exp: "قانون عدم الاستعمال يؤكد أن التوقف يؤدي لضعف الرابطة." },
-                    { q: "الاستعداد عند ثورندايك يشير فقط إلى مرحلة النمو العمرية (مثل استعداد القراءة).", options: ["صح", "خطأ"], correct: "خطأ", exp: "يشير إلى تكيف استعدادي عصبي (رضا أو ضيق) بغض النظر عن مرحلة النمو." },
-                    { q: "التعلم عند ثورندايك هو عملية فجائية تحدث مرة واحدة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعلم تدريجي وتراكمي من خلال تكرار المحاولات وحذف الأخطاء." },
-                    { q: "الاستجابة الوسيلية هي التي تؤدي إلى الوصول للهدف.", options: ["صح", "خطأ"], correct: "صح", exp: "تسمى وسيلية لأنها وسيلة الكائن لتحقيق غرضه (مثل فتح الباب)." },
-                    { q: "أثبت ثورندايك أن الحيوانات قادرة على القيام بعمليات عقلية معقدة وتفهم المشكلة فوراً.", options: ["صح", "خطأ"], correct: "خطأ", exp: "أيقن ثورندايك أن الحيوان يتعلم آلياً وبالتدريج وليس بالفهم أو التفكير." },
-                    { q: "من شروط التجربة وجود عائق يمنع الوصول المباشر للهدف.", options: ["صح", "خطأ"], correct: "صح", exp: "العائق (الباب المغلق) هو ما يولد الحاجة للمحاولة والخطأ." },
-                    { q: "استخدام العقاب في الفصول الدراسية هو أفضل وسيلة لتعديل السلوك حسب ثورندايك.", options: ["صح", "خطأ"], correct: "خطأ", exp: "ثورندايك طالب بتجنب العقاب وركز على الثواب والمكافأة الفورية." },
-                    { q: "التكرار وحده بدون تعزيز أو توجيه قد لا يؤدي إلى تحسين التعلم.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التكرار لابد أن يكون موجهاً ومعززاً ليكون فعالاً." },
-                    { q: "نظرية ثورندايك تسمى أيضاً بالنظرية الارتباطية.", options: ["صح", "خطأ"], correct: "صح", exp: "بسبب تركيزها على الارتباط بين المثيرات واستجاباتها." },
-                    { q: "النشاط الذاتي يعني أن المتعلم يتعلم عن طريق العمل والممارسة بنفسه.", options: ["صح", "خطأ"], correct: "صح", exp: "التعلم لا يحدث بمجرد التلقين بل لابد من بذل مجهود ذاتي." },
-                    { q: "يرى ثورندايك أن العقاب يؤثر بشكل متساوٍ تماماً مع الثواب في إضعاف الروابط.", options: ["صح", "خطأ"], correct: "خطأ", exp: "عدل رأيه واعتبر أن أثر الثواب أقوى وأكثر مباشرة من العقاب." },
-                    { q: "التعرض لمشكلات صعبة جداً في البداية يساعد الحيوان على التعلم أسرع.", options: ["صح", "خطأ"], correct: "خطأ", exp: "المشكلات الصعبة قد تسبب الإحباط؛ والأفضل هو التدرج من السهل للصعب." },
-                    { q: "التغذية الراجعة الفورية تقوي الروابط الصحيحة.", options: ["صح", "خطأ"], correct: "صح", exp: "إعلام المتعلم بصحة استجابته فوراً يعزز التعلم." },
-                    { q: "تجارب ثورندايك شملت القطط والأسماك والكتاكيت.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، أجرى تجاربه على أنواع مختلفة من الحيوانات." },
-                    { q: "منحنى التعلم يوضح أن عدد المحاولات يزداد مع التقدم في الزمن.", options: ["صح", "خطأ"], correct: "خطأ", exp: "المنحنى يوضح تناقص الزمن مع زيادة عدد المحاولات." },
-                    { q: "تأجيل التعزيز لفترة طويلة جداً لا يؤثر على قوة الارتباط.", options: ["صح", "خطأ"], correct: "خطأ", exp: "تأجيل التعزيز قد يضعف الرابطة؛ والمكافأة الفورية هي الأفضل." },
-                    { q: "الاستجابة التجنبية تهدف للابتعاد عن مثير منفر بدأ بالفعل في التأثير.", options: ["صح", "خطأ"], correct: "خطأ", exp: "هذه هي الهروبية، أما التجنبية فتحدث قبل وقوع المثير المنفر." },
-                    { q: "يجب أن يكون موقف التعلم ممثلاً للواقع بقدر الإمكان لضمان انتقال أثر التدريب.", options: ["صح", "خطأ"], correct: "صح", exp: "حسب نظرية العناصر المتماثلة لثورندايك." },
-                    { q: "الممارسة تقوي الروابط الصحيحة فقط ولا تقوي الخاطئة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الممارسة تقوي أي رابطة تتكرر، لذا وجب تصحيح الخطأ فوراً حتى لا يثبت." },
-                    { q: "في قانون الاستعداد، إجبار وحدة عصبية على التوصيل يسبب الانزعاج.", options: ["صح", "خطأ"], correct: "صح", exp: "الإجبار على الأداء دون استعداد يؤدي لعدم الرضا." },
-                    { q: "ركز ثورندايك على التعلم القائم على الإلقاء لأنه أسرع في التحصيل.", options: ["صح", "خطأ"], correct: "خطأ", exp: "ركز على التعلم القائم على الأداء والممارسة." },
-                    { q: "مسمى 'نظرية الأثر' هو أحد مسميات نظرية ثورندايك.", options: ["صح", "خطأ"], correct: "صح", exp: "نظراً للأهمية القصوى لقانون الأثر في نظريته." },
-                    { q: "الحركات العشوائية تزداد تدريجياً حتى تسيطر على سلوك القط في النهاية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "الحركات العشوائية تتناقص حتى تزول وتبقى فقط الحركة الصحيحة." },
-                    { q: "ربط المادة الدراسية بمواقف من حياة التلميذ اليومية يسهل التعلم.", options: ["صح", "خطأ"], correct: "صح", exp: "يزيد من المعنى ويقوي الروابط العصبية." },
-                    { q: "ثورندايك يعتقد أن دراسة الرياضيات تعزز القدرة الاستدلالية العامة في كل شؤون الحياة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "يعارض نظرية التدريب الشكلي ويؤمن بنظرية العناصر المتماثلة المحدودة." },
-                    { q: "يجب مكافأة المتعلم بصورة فورية على الاستجابات الصحيحة.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا يحقق أكبر فائدة تربوية من قانون الأثر." },
-                    { q: "الدافع يحرك الحيوان للاستجابة المراد تعلمها.", options: ["صح", "خطأ"], correct: "صح", exp: "بدون دافع (مثل الجوع) لن يبذل الكائن الحي جهداً للمحاولة." },
-                    { q: "تكرار الاقتران بين المثير والاستجابة هو العامل الوحيد والأساسي لتقوية الرابطة عند ثورندايك.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التكرار عامل، لكن الأثر (الارتياح) هو العامل الحاسم والأهم." }
-                ]
-            },
-            skinner: {
-                title: "نظرية سكينر - الاشتراط الإجرائي",
-                questions: [
-                    { q: "يسمى نموذج سكينر في التعلم بـ:", options: ["الاشتراط الكلاسيكي", "الاشتراط الإجرائي", "التعلم بالمحاولة والخطأ", "التعلم الاجتماعي"], correct: "الاشتراط الإجرائي", exp: "يسمى نموذج سكينر بالاشتراط الإجرائي لأن السلوك ينبعث من الكائن ليجري تغييراً في البيئة." },
-                    { q: "السلوك الذي يتكون من استجابات نتيجة لمثيرات محددة ومعروفة مسبقاً يسمى:", options: ["السلوك الإجرائي", "السلوك الاستجابي", "السلوك العشوائي", "السلوك الإرادي"], correct: "السلوك الاستجابي", exp: "السلوك الاستجابي (مثل سيل اللعاب للطعام) محكوم بمثيرات قبلية معروفة." },
-                    { q: "تعتمد قوة الاستجابة في الاشتراط الإجرائي على:", options: ["المثير الذي يسبقها", "النتائج التي تتبعها (التعزيز)", "الوراثة", "البيئة المحيطة فقط"], correct: "النتائج التي تتبعها (التعزيز)", exp: "في التعلم الإجرائي، تضبط الاستجابات بما يترتب عليها من نتائج أو تعزيز." },
-                    { q: "تعزيز الاستجابات التي تقترب تدريجياً من السلوك النهائي المطلوب يسمى:", options: ["التعميم", "التشكيل", "الانطفاء", "التمييز"], correct: "التشكيل", exp: "التشكيل هو تعزيز التقريب التتابعي للسلوك المطلوب حتى الوصول للهدف النهائي." },
-                    { q: "تقديم مثير مرغوب فيه بعد أداء استجابة معينة لتقويتها يسمى:", options: ["تعزيز سلبي", "تعزيز إيجابي", "عقاب إيجابي", "عقاب سلبي"], correct: "تعزيز إيجابي", exp: "التعزيز الإيجابي يتضمن تقديم منبه محبب لزيادة احتمال تكرار السلوك." },
-                    { q: "التعزيز الذي يؤدي لإزالة منبه مؤلم أو كريه يسمى:", options: ["تعزيز إيجابي", "تعزيز سلبي", "عقاب إيجابي", "انطفاء"], correct: "تعزيز سلبي", exp: "التعزيز السلبي هو إزالة وضع غير مرغوب فيه لتقوية السلوك (مثل الهرب من الألم)." },
-                    { q: "إيقاف التعزيز الذي كان يتبع الاستجابة يؤدي إلى ظاهرة:", options: ["التعميم", "الانطفاء", "التشكيل", "الاكتساب"], correct: "الانطفاء", exp: "يتم الانطفاء في الاشتراط الإجرائي عن طريق إنهاء أو سحب التعزيز الذي كان يلي الاستجابة." },
-                    { q: "جدول التعزيز الذي يعتمد على عدد محدد من الاستجابات يسمى جدول:", options: ["الزمن الثابت", "النسبة الثابتة", "الزمن العشوائي", "النسبة المتغيرة"], correct: "النسبة الثابتة", exp: "جداول النسبة تعتمد على عدد الاستجابات التي أجراها الكائن الحي بالفعل." },
-                    { q: "معرفة الكائن الحي بنتائج استجابته تسمى:", options: ["المثير الشرطي", "التغذية الراجعة", "التعميم", "التشكيل"], correct: "التغذية الراجعة", exp: "التغذية الراجعة (Feedback) هي تزويد المتعلم بمعلومات عن صحة أو خطأ أدائه فوراً." },
-                    { q: "التعليم الذي يعتمد على تجزئة المادة لوحدات بسيطة وتقديم تغذية راجعة فورية هو:", options: ["التعليم التقليدي", "التعليم المبرمج", "التعلم بالملاحظة", "التعلم الذاتي العشوائي"], correct: "التعليم المبرمج", exp: "ابتكر سكينر التعليم المبرمج بناءً على مبادئ التعزيز الفوري وتجزئة المادة." },
-                    { q: "الاستجابات التي تنبعث من الكائن الحي بصورة تلقائية وإرادية تسمى:", options: ["استجابات انعكاسية", "إجراءات", "مثيرات شرطية", "عادات فطرية"], correct: "إجراءات", exp: "السلوك الإجرائي إرادي وتلقائي ويسمى الاستجابة فيه بـ 'الإجراء'." },
-                    { q: "في تجربة سكينر، كان 'الضغط على الرافعة' هو:", options: ["مثير طبيعي", "الاستجابة الإجرائية", "المعزز الأولي", "المثير الحيادي"], correct: "الاستجابة الإجرائية", exp: "الضغط على الرافعة هو الفعل الذي يقوم به الفأر للحصول على التعزيز." },
-                    { q: "سحب أو حرمان التلميذ من رحلة مدرسية بسبب سلوك سيء يسمى:", options: ["عقاب إيجابي", "عقاب سلبي (تعلم حذفي)", "تعزيز سلبي", "تعزيز إيجابي"], correct: "عقاب سلبي (تعلم حذفي)", exp: "العقاب السلبي هو استبعاد منبه لذيذ أو محبب لإضعاف سلوك غير مرغوب فيه." },
-                    { q: "التعرض للضرب أو التوبيخ نتيجة القيام بسلوك خاطئ يسمى:", options: ["تعزيز إيجابي", "عقاب إيجابي", "عقاب سلبي", "انطفاء"], correct: "عقاب إيجابي", exp: "العقاب الإيجابي هو تقديم منبه منفر (مؤلم) لتقليل احتمال تكرار السلوك." },
-                    { q: "أي من الجداول التالية هي الأكثر مقاومة للانطفاء؟", options: ["التعزيز المستمر", "التعزيز المتقطع (الجزئي)", "العقاب الإيجابي", "التعزيز الأولي"], correct: "التعزيز المتقطع (الجزئي)", exp: "التعزيز الجزئي يجعل الاستجابة أكثر دواماً وأصعب في الانطفاء." },
-                    { q: "مرحلة 'تحديد مستوى الإجراء' في تجربة سكينر تعني:", options: ["تقديم الطعام بكثرة", "قياس معدل الضغط دون تعزيز", "تعليم الفأر الضغط", "استخدام العقاب"], correct: "قياس معدل الضغط دون تعزيز", exp: "هي مرحلة قياس السلوك الطبيعي للفأر قبل إدخال التعزيز للمقارنة." },
-                    { q: "المعزز الذي يمتلك خصائص التعزيز نتيجة اقترانه بمعزز آخر يسمى:", options: ["معزز أولي", "معزز ثانوي", "مثير منفر", "استجابة وسيلية"], correct: "معزز ثانوي", exp: "المعزز الثانوي (مثل الدرجات أو المال) يكتسب قيمته من اقترانه بمعززات أولية." },
-                    { q: "يرى سكينر أن أفضل طرق التعزيز في الفصل هي التي تبدأ بـ:", options: ["تعزيز متقطع ثم مستمر", "تعزيز مستمر ثم متقطع", "عقاب ثم تعزيز", "تجاهل تام"], correct: "تعزيز مستمر ثم متقطع", exp: "التعزيز المستمر يسرع التعلم في البداية، والمتقطع يضمن استمراره ومقاومته للنسيان." },
-                    { q: "استخدام إجراءات الاشتراط الإجرائي لتكوين سلوك مقبول اجتماعياً يسمى:", options: ["النمو النفسي", "العلاج السلوكي", "التعليم التقليدي", "التحليل النفسي"], correct: "العلاج السلوكي", exp: "يعتمد العلاج السلوكي على مبادئ التعزيز والعقاب لتعديل السلوك غير السوي." },
-                    { q: "الفرق الجوهري بين الاشتراط الكلاسيكي والإجرائي هو أن المتعلم في الإجرائي يكون:", options: ["سلبياً", "إيجابياً ونشطاً", "نائماً", "مجبراً على الاستجابة"], correct: "إيجابياً ونشطاً", exp: "في التعلم الإجرائي، المتعلم هو من يبادر بالاستجابة للحصول على التعزيز." },
-                    { q: "في الاشتراط الإجرائي، العلاقة الرئيسية تكون بين:", options: ["مثير ومثير آخر", "الاستجابة والتعزيز", "المتعلم والمعلم فقط", "الوراثة والذكاء"], correct: "الاستجابة والتعزيز", exp: "العلاقة في نموذج سكينر هي 'تعاقدية'؛ قم بالاستجابة تحصل على التعزيز." },
-                    { q: "تطبيق التهديد بالرسوب لدفع الطالب للمذاكرة يعتبر نوعاً من:", options: ["التعزيز الإيجابي", "التعزيز السلبي", "العقاب السلبي", "انطفاء"], correct: "التعزيز السلبي", exp: "إزالة التهديد (المنبه الكريه) مرتبطة بالقيام بالسلوك المطلوب (المذاكرة)." },
-                    { q: "برمجة المادة العلمية تعني تقديمها في شكل:", options: ["محاضرة طويلة", "وحدات متتابعة بسيطة", "اختبار مفاجئ", "كتاب بدون صور"], correct: "وحدات متتابعة بسيطة", exp: "التعليم المبرمج يقسم المادة لخطوات صغيرة لضمان النجاح والتعزيز المستمر." },
-                    { q: "ظاهرة 'التعميم' في نموذج سكينر تعني:", options: ["التمييز بين المثيرات", "انتقال أثر التعلم لمواقف مشابهة", "نسيان السلوك", "تغيير المثير"], correct: "انتقال أثر التعلم لمواقف مشابهة", exp: "التعميم يعني أن الاستجابة المعززة في موقف قد تظهر في مواقف مشابهة." },
-                    { q: "يعتبر سكينر أن أسلوب 'المحاضرة' غير فعال لأنه:", options: ["صعب جداً", "لا يتيح تعزيز الاستجابات الصحيحة فوراً", "ممل فقط", "يتطلب وقتاً"], correct: "لا يتيح تعزيز الاستجابات الصحيحة فوراً", exp: "المحاضرة تجعل الطالب سلبياً ولا توفر فرصة لممارسة السلوك وتلقي التعزيز." },
-                    { q: "الأم التي تحمل طفلها ليتوقف عن البكاء تدعم سلوك البكاء تدعيماً:", options: ["مستمراً", "جزئياً (إذا فعلت ذلك أحياناً)", "سلبياً دائماً", "منعدماً"], correct: "جزئياً (إذا فعلت ذلك أحياناً)", exp: "التدعيم الجزئي (أحياناً تحمل وأحياناً لا) يجعل عادة البكاء قوية جداً." },
-                    { q: "العقاب الذي يتضمن استبقاء التلاميذ بعد ميعاد الانصراف يسمى عقاباً:", options: ["من النوع الأول (إيجابي)", "من النوع الثاني (سلبي)", "تعزيزاً إيجابياً", "انطفاءً"], correct: "من النوع الثاني (سلبي)", exp: "لأنه يتضمن حرمان (استبعاد) الطالب من وقت الراحة أو العودة للمنزل (منبه محبب)." },
-                    { q: "المثيرات التي لا تملك خاصية كف السلوك بطبيعتها وتكتسبها بالتعلم تسمى:", options: ["معاقبات أولية", "معاقبات ثانوية", "معززات أولية", "إجراءات"], correct: "معاقبات ثانوية", exp: "مثل 'المدرسة' التي تصبح منفرة إذا اقترنت بالعقاب البدني." },
-                    { q: "شرط الانتقال من خطوة لخطوة في التعليم المبرمج هو:", options: ["مرور الوقت", "إتقان الخطوة السابقة", "رغبة المعلم", "نهاية العام"], correct: "إتقان الخطوة السابقة", exp: "لا ينتقل المتعلم لخطوة أصعب إلا بعد التأكد من نجاحه في السابقة لضمان التعزيز." },
-                    { q: "هدف سكينر من تجربة 'الحمامة والنقطة السوداء' هو إثبات مبدأ:", options: ["التعميم", "التشكيل (التقريب التتابعي)", "الوراثة", "التعب"], correct: "التشكيل (التقريب التتابعي)", exp: "أثبت كيف يمكن تعليم سلوك معقد (نقر نقطة معينة) عبر مراحل تعزيز متدرجة." },
-                    { q: "في الاشتراط الكلاسيكي، المثير التعزيزي يأتي قبل السلوك ولا يتبعه.", options: ["صح", "خطأ"], correct: "صح", exp: "في الكلاسيكي المثير يسبق الاستجابة، أما في الإجرائي فالتعزيز يتبع الاستجابة." },
-                    { q: "السلوك الإجرائي محكوم بمثيرات قبلية محددة ومعروفة.", options: ["صح", "خطأ"], correct: "خطأ", exp: "السلوك الإجرائي ينبعث تلقائياً وتضبطه نتائجه اللاحقة." },
-                    { q: "التعزيز السلبي هو نفسه العقاب الإيجابي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "التعزيز السلبي يقوي السلوك (بإزالة الألم)، أما العقاب فيضعف السلوك." },
-                    { q: "الانطفاء في الاشتراط الإجرائي يحدث عند التوقف عن تقديم المعزز.", options: ["صح", "خطأ"], correct: "صح", exp: "غياب التعزيز يؤدي تدريجياً لتلاشي الاستجابة." },
-                    { q: "التعزيز الجزئي (المتقطع) يؤدي إلى اكتساب أسرع للتعلم من التعزيز المستمر.", options: ["صح", "خطأ"], correct: "خطأ", exp: "المستمر أسرع في الاكتساب، لكن المتقطع أقوى في الاستبقاء." },
-                    { q: "التشكيل يستخدم لتعليم الاستجابات المعقدة التي لا تصدر عن المتعلم تلقائياً.", options: ["صح", "خطأ"], correct: "صح", exp: "عبر تعزيز الخطوات البسيطة المؤدية للسلوك المعقد." },
-                    { q: "يرى سكينر أن العقاب هو الوسيلة الأفضل لإلغاء السلوك السيء في الصف.", options: ["صح", "خطأ"], correct: "خطأ", exp: "سكينر نصح بتجنب العقاب واستخدام التجاهل (الانطفاء) أو التعزيز الإيجابي للبدائل." },
-                    { q: "التغذية الراجعة تعتبر نوعاً من التعزيز في المواقف التعليمية.", options: ["صح", "خطأ"], correct: "صح", exp: "تزويد الطالب بنتيجة عمله يعزز الاستجابات الصحيحة." },
-                    { q: "المدح والنجوم الذهبية تعتبر معززات أولية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "هي معززات ثانوية (مكتسبة)." },
-                    { q: "في جداول النسبة، يعتمد التعزيز على عدد الاستجابات التي يقوم بها الكائن.", options: ["صح", "خطأ"], correct: "صح", exp: "مثل تعزيز الطالب بعد كل ٥ مسائل صحيحة." },
-                    { q: "الضرب والصدمة الكهربائية تعتبر معاقبات ثانوية.", options: ["صح", "خطأ"], correct: "خطأ", exp: "هي معاقبات أولية (فطرية التأثير)." },
-                    { q: "يرتبط الانطفاء في الاشتراط الإجرائي بإنهاء المثير الشرطي.", options: ["صح", "خطأ"], correct: "خطأ", exp: "يرتبط بإنهاء (سحب) التعزيز." },
-                    { q: "التعليم المبرمج يتيح لكل متعلم السير حسب سرعته الخاصة.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا من أهم مميزات التعليم المبرمج القائم على نموذج سكينر." },
-                    { q: "أثر التعزيز الجزئي يعني أن الاستجابة تكون أكثر مقاومة للانطفاء.", options: ["صح", "خطأ"], correct: "صح", exp: "لأن الكائن لا يتوقع التعزيز في كل مرة، فيستمر في المحاولة لفترة أطول." },
-                    { q: "السلوك الذي يدعم (يعزز) يُتعلم، والسلوك الذي لا يدعم لا يُتعلم.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو المبدأ الأساسي في نظرية سكينر." },
-                    { q: "استخدام الابتسامات والإيماءات الإيجابية من المعلم يعتبر تعزيزاً إيجابياً.", options: ["صح", "خطأ"], correct: "صح", exp: "هي منبهات محببة تزيد من إقبال الطالب على التعلم." },
-                    { q: "العقاب ينجح دائماً في استبعاد السلوك المكروه نهائياً.", options: ["صح", "خطأ"], correct: "خطأ", exp: "العقاب قد يخفي السلوك مؤقتاً أو يولد مشاعر عدائية تجاه المعلم." },
-                    { q: "التعلم التجنبي يعتمد على إجراء التعزيز السلبي.", options: ["صح", "خطأ"], correct: "صح", exp: "نعم، المتعلم يتجنب المثير المنفر بالقيام بالاستجابة المطلوبة." },
-                    { q: "في جداول التعزيز العشوائية، يتم تقديم المكافأة بطريقة غير متوقعة.", options: ["صح", "خطأ"], correct: "صح", exp: "وهذا ما يجعل السلوك شديد المقاومة للانطفاء (مثل سلوك الصياد)." },
-                    { q: "الاستجابة الإجرائية هي الأداة أو الوسيلة التي تمكن المتعلم من تحقيق هدفه.", options: ["صح", "خطأ"], correct: "صح", exp: "لذلك يسمى أحياناً بالاشتراط الوسيلي أو الذرائعي." },
-                    { q: "سكينر ركز على المثير الذي يسبق الاستجابة أكثر من النتائج.", options: ["صح", "خطأ"], correct: "خطأ", exp: "سكينر ركز على النتائج (التعزيز) التي تتبع الاستجابة." },
-                    { q: "تجزئة المادة إلى وحدات بسيطة يقلل من احتمالية حدوث الخطأ.", options: ["صح", "خطأ"], correct: "صح", exp: "الهدف هو ضمان تحقيق النجاح وتلقي التعزيز الفوري." },
-                    { q: "التعلم الثوابي هو الاسم الآخر للتعزيز الإيجابي.", options: ["صح", "خطأ"], correct: "صح", exp: "لأن يتضمن الحصول على ثواب (مثير مرغوب) نتيجة السلوك." },
-                    { q: "معظم أنواع السلوك غير السوي هي نتيجة التعلم ويمكن علاجها.", options: ["صح", "خطأ"], correct: "صح", exp: "هذا هو الافتراض الأساسي الذي يقوم عليه العلاج السلوكي." },
-                    { q: "التجاهل (عدم الانتباه) لسلوك الطالب المشاغب هو تطبيق لمبدأ التشكيل.", options: ["صح", "خطأ"], correct: "خطأ", exp: "هو تطبيق لمبدأ الانطفاء." },
-                    { q: "التعزيز المستمر هو الأفضل للمراحل الأولى من تعلم مهارة جديدة.", options: ["صح", "خطأ"], correct: "صح", exp: "لأنه يثبت الرابطة بسرعة بين الفعل والنتيجة." },
-                    { q: "سكينر يرى ضرورة تحديد الأهداف سلوكياً قبل البدء في التدريس.", options: ["صح", "خطأ"], correct: "صح", exp: "الأهداف الإجرائية تمكن المعلم من قياس مدى تحقق التعلم." },
-                    { q: "التعلم عند سكينر يسير من المركب إلى البسيط.", options: ["صح", "خطأ"], correct: "خطأ", exp: "يسير من البسيط إلى المركب (تجميع السلوكيات البسيطة لتكوين المركبة)." },
-                    { q: "الحرمان من الطعام يؤدي إلى أن يصبح الطعام معززاً أولياً.", options: ["صح", "خطأ"], correct: "صح", exp: "الحرمان يزيد من قيمة المعزز المرتبط بالحاجة البيولوجية." },
-                    { q: "الاشتراط الإجرائي لا يتضمن إجبار الاستجابة على الظهور.", options: ["صح", "خطأ"], correct: "صح", exp: "صح، الاستجابة تنبعث تلقائياً من الكائن وليست مستثارة قسرياً." }
-                ]
-            }
+        // جميع الأسئلة مجمعة في كائن واحد مقسم بالفصول (180 سؤال)
+        const allQuestions = {
+            // ================= أسئلة الفصل الأول =================
+            ch1: [
+                { type: 'tf', q: 'اللغة العربية هي الأداة الجوهرية للاتصال والمحرك الفاعل في حياة الأفراد والمجتمعات.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'لا تساهم اللغة في بناء شخصية التلميذ فكرياً وروحياً.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تسعى المدرسة من خلال اللغة إلى تكوين شخصية قادرة على مواجهة مواقف الحياة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'يعتبر التواصل اللغوي هدفاً ثانوياً لتعليم اللغة العربية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'عدم تمكن المتعلم من مهارات اللغة الأربعة يحول دون قدرته على التواصل الفعال.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'عرف (عليان) التواصل بأنه التعبير السليم عن المشاعر وتلميحات الآخرين وضبط الانفعالات.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'التواصل الكتابي يعتمد على مهاراتي الاستماع والتحدث.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'فنون اللغة الأربعة (استماع، تحدث، قراءة، كتابة) منفصلة ولا تؤثر في بعضها البعض.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'المستمع الجيد يكون بالضرورة متحدثاً وقارئاً وكاتباً جيداً.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الاستماع هو المهارة الأولى والأساس الذي تبنى عليه قدرات الفرد اللغوية.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الإنصات هو أعلى درجات الاستماع ويتطلب التركيز الشديد كاستماع القرآن.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'السماع هو استقبال الأذن للذبذبات الصوتية بانتباه وتركيز شديد.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'من مهارات الاستماع الفرعية التنبؤ بالنتائج وتلخيص النص المسموع.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'التحدث هو قدرة الفرد على التعبير الشفوي عن مشاعره، وهو أكثر المهارات استخداماً.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من السمات الشخصية للمتحدث الناجح: تدعيم الحديث بالحجج والبراهين والمنطق.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'القراءة الصامتة تعتمد على إدراك المعاني بالنظر مع إخراج صوت منخفض.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'البدء بالقراءة الصامتة لإدراك المعنى قبل الأداء الجهري من أساليب تنمية القراءة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الكتابة الإبداعية هي التي تؤدي غرضاً نفعياً كالمراسلات الرسمية والتقارير.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'الكتابة التفسيرية تهدف إلى إيصال المعلومات وشرحها بتركيز على موضوع واحد.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'أكدت دراسة العتيبي أن استخدام "النص التمثيلي" ينمي مهارات التواصل الشفهي والكتابي.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'بدون رد المستقبل على الرسالة، يظل الموقف "اتصالاً" وليس "تواصلاً".', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الرسالة الناجحة تتميز بالتعقيد اللفظي والغموض لإثارة تفكير المستقبل.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'التغذية الراجعة هي التي تجعل نمط التواصل اللغوي دائرياً.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الاتصال الذاتي هو تفكير الشخص مع نفسه، والمرسل والمستقبل هو الفرد ذاته.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الاتصال الشخصي هو انتقال الرسالة من متحدث واحد إلى جمهور كبير كالمحاضرة.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'الاتصال الجماهيري يتجاوز الحدود الجغرافية ويتم عبر الوسائل الإلكترونية كالتلفاز.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الاتصال الثقافي يحدث عند اتصال أشخاص من ثقافات مختلفة ويتطلب وعياً بالاختلافات.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'تمثيل المعلم للقصص وتحويلها لتمثيليات يعيق الملاحظة والتفكير الناقد للتلاميذ.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'مهارات الإرسال في التواصل اللغوي تتمثل في الاستماع والقراءة.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'القراءة الجيدة تعكس تحدثاً جيداً، والتحدث الجيد يعكس استماعاً جيداً في حلقة متكاملة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'mcq', q: 'أركان الاتصال تفرض ضرورة إلمام الفرد بـ .......... مهارات أساسية للغة.', opts: ['ثلاث', 'أربع', 'خمس', 'ست'], ans: 1 },
+                { type: 'mcq', q: 'من مهارات التواصل الشفهي:', opts: ['القراءة والكتابة', 'القراءة والاستماع', 'الاستماع والتحدث', 'التحدث والكتابة'], ans: 2 },
+                { type: 'mcq', q: 'من مهارات التواصل الكتابي:', opts: ['الاستماع والتحدث', 'القراءة والكتابة', 'القراءة والتحدث', 'الاستماع والكتابة'], ans: 1 },
+                { type: 'mcq', q: 'عرف التواصل بأنه عملية ينقل بها الشخص أفكاراً عبر رسائل تصاحبها تعبيرات الوجه والجسم:', opts: ['عاشور 2005', 'داود 2019', 'عليان 2000', 'Diggins 2024'], ans: 3 },
+                { type: 'mcq', q: 'عملية تفاعل بين مرسل ومستقبل لتوصيل رسالة عبر قناة مناسبة لإشباع حاجة، هذا تعريف:', opts: ['داود 2019', 'Gang 2011', 'شحاتة 2012', 'Montess 2002'], ans: 0 },
+                { type: 'mcq', q: 'التسلسل المهاري الصحيح لاكتساب اللغة هو:', opts: ['قراءة - كتابة - تحدث - استماع', 'استماع - تحدث - قراءة - كتابة', 'تحدث - استماع - كتابة - قراءة', 'كتابة - قراءة - استماع - تحدث'], ans: 1 },
+                { type: 'mcq', q: 'استقبال الأذن للذبذبات الصوتية دون انتباه أو تركيز، يسمى:', opts: ['الإنصات', 'الاستماع', 'السماع', 'التواصل الذاتي'], ans: 2 },
+                { type: 'mcq', q: 'إرهاف السمع والتركيز الشديد (مثل الاستماع للقرآن) يطلق عليه:', opts: ['السماع', 'الإنصات', 'القراءة الصامتة', 'الاتصال الجماهيري'], ans: 1 },
+                { type: 'mcq', q: 'أي مما يلي ليس من مهارات الاستماع الفرعية؟', opts: ['سرد القصة ومراعاة التسلسل', 'التنبؤ بالنتائج', 'إخراج الحروف بدقة وضبط أواخر الكلمات', 'استخلاص معاني الكلمات من السياق'], ans: 2 },
+                { type: 'mcq', q: 'النبر، الهمس، عدم السرعة، وإخراج الحروف بدقة، تعتبر من سمات المتحدث الـ:', opts: ['الشخصية', 'الصوتية', 'الاجتماعية', 'العقلية'], ans: 1 },
+                { type: 'mcq', q: 'تدعيم الحديث بالحجج والبراهين والمنطق من سمات المتحدث:', opts: ['الاجتماعية', 'الصوتية', 'الشخصية', 'النفسية'], ans: 0 },
+                { type: 'mcq', q: 'عملية ذهنية وحركية لتحليل الرموز وتفسيرها وفهم المعنى هي:', opts: ['التحدث', 'الاستماع', 'القراءة', 'الكتابة الإبداعية'], ans: 2 },
+                { type: 'mcq', q: 'ترجمة الرموز المكتوبة إلى ألفاظ منطوقة بصوت مسموع هي القراءة:', opts: ['الصامتة', 'الجهرية', 'التحليلية', 'السريعة'], ans: 1 },
+                { type: 'mcq', q: 'تعد المفتاح الأساسي لجميع المواد الدراسية والضعف فيها يؤدي للإخفاق الدراسي:', opts: ['القراءة', 'الكتابة الوظيفية', 'الكتابة التفسيرية', 'الاتصال الثقافي'], ans: 0 },
+                { type: 'mcq', q: 'الإفصاح عن العواطف وصياغتها فنياً كالمقال والقصة والشعر يسمى كتابة:', opts: ['وظيفية', 'تفسيرية', 'إبداعية', 'إجرائية'], ans: 2 },
+                { type: 'mcq', q: 'المراسلات الرسمية والتقارير والإعلانات من أمثلة الكتابة:', opts: ['الإبداعية', 'التفسيرية', 'العاطفية', 'الوظيفية'], ans: 3 },
+                { type: 'mcq', q: 'تستخدم في المناهج والملخصات الدراسية لشرح المعلومات والتركيز على موضوع واحد:', opts: ['الكتابة التفسيرية', 'الكتابة الإبداعية', 'الكتابة الوظيفية', 'القراءة الصامتة'], ans: 0 },
+                { type: 'mcq', q: 'الركن المبتدئ بالعملية التواصلية ويسعى لإحداث أثر في الطرف الآخر هو:', opts: ['المستقبل', 'المرسل', 'القناة', 'الترميز'], ans: 1 },
+                { type: 'mcq', q: 'بدونه يظل الموقف "اتصالاً" فقط ولا يرتقي ليكون "تواصلاً" حقيقياً:', opts: ['تعدد القنوات', 'رد المستقبل (التغذية الراجعة)', 'الترميز المعقد', 'الاتصال العام'], ans: 1 },
+                { type: 'mcq', q: 'الرموز والقواعد المشتركة بين الطرفين لفك شفرة الرسالة تسمى:', opts: ['القناة', 'الترميز', 'الرسالة', 'التغذية الراجعة'], ans: 1 },
+                { type: 'mcq', q: 'الأداة الناقلة للرسالة والتي تختلف باختلاف المستوى (لغة، وسيلة إلكترونية):', opts: ['القناة (الوسيلة)', 'التغذية الراجعة', 'الترميز', 'المستقبل'], ans: 0 },
+                { type: 'mcq', q: 'بناء علاقات وثيقة مع الآخرين وصيانتها يندرج تحت أحد أهداف التواصل وهو:', opts: ['الاكتشاف', 'الإقناع', 'التقارب', 'الاقتناع'], ans: 2 },
+                { type: 'mcq', q: 'تبادل المصالح والأفكار والمعتقدات عبر التفاوض يحقق هدف:', opts: ['التقارب', 'الإقناع والاقتناع', 'الاكتشاف', 'الاتصال الذاتي'], ans: 1 },
+                { type: 'mcq', q: 'تفكير الشخص مع نفسه (تخزين معلومات أو حل مشكلات) يسمى اتصال:', opts: ['شخصي', 'جماهيري', 'عام', 'ذاتي'], ans: 3 },
+                { type: 'mcq', q: 'اتصال يحدث بين شخصين أو أكثر في جو غير رسمي كالأصدقاء:', opts: ['شخصي', 'عام (جمعي)', 'جماهيري', 'ثقافي'], ans: 0 },
+                { type: 'mcq', q: 'انتقال الرسالة من متحدث واحد إلى جمهور كبير كالمحاضرة أو الخطبة يسمى اتصال:', opts: ['ذاتي', 'شخصي', 'جماهيري', 'عام (جمعي)'], ans: 3 },
+                { type: 'mcq', q: 'الاتصال الذي يتم عبر الوسائل الإلكترونية (راديو، تلفاز) ويتجاوز الحدود الجغرافية:', opts: ['الجمعي', 'الجماهيري', 'الثقافي', 'الشخصي'], ans: 1 },
+                { type: 'mcq', q: 'أهم مراحل الاكتساب اللغوي حيث يميل التلاميذ للعب والتمثيل هي المرحلة:', opts: ['الجامعية', 'الثانوية', 'الأساسية', 'المهنية'], ans: 2 },
+                { type: 'mcq', q: 'مهارات الإرسال في عملية التواصل اللغوي تشمل:', opts: ['الاستماع والقراءة', 'التحدث والكتابة', 'الاستماع والتحدث', 'القراءة والكتابة'], ans: 1 },
+                { type: 'mcq', q: 'مهارات الاستقبال في عملية التواصل اللغوي تشمل:', opts: ['الاستماع والقراءة', 'التحدث والكتابة', 'القراءة والتحدث', 'الاستماع والكتابة'], ans: 0 }
+            ],
+            
+            // ================= أسئلة الفصل الثاني =================
+            ch2: [
+                { type: 'tf', q: 'تُصنف دورة التعلم كواحدة من الاستراتيجيات التعليمية التي انبثقت عن النظرية السلوكية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تستند استراتيجية دورة التعلم في تدريس المفاهيم إلى نظرية بياجيه للنمو المعرفي.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'تقدم استراتيجية دورة التعلم العلم كطريقة للتلقين والحفظ بدلاً من البحث والتفكير.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'في استراتيجية دورة التعلم، يتولى الطلبة بأنفسهم مسؤولية التعلم عبر التحري والاستقصاء.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'تعتمد استراتيجية دورة التعلم على جعل المعلم هو المحور الأساسي للعملية التعليمية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تبدأ عملية التعلم في هذه الاستراتيجية بالاكتشاف، ثم بناء المفهوم، وصولاً إلى تطبيقه.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'أكد عطيو (2006) أن دورة التعلم ترتقي بتفكير الطالب وتنقله من اكتساب المفاهيم المجردة إلى المرحلة المحسوسة الأولية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تتشكل دورة التعلم الأساسية المعتمدة في هذه الدراسة من أربع مراحل رئيسية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'يرى بياجيه أن العقل "صفحة بيضاء" وأن الحواس هي الوسيلة الوحيدة لتنسيق المعلومات.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'ظهرت استراتيجية دورة التعلم في الستينيات بالولايات المتحدة على يد روبرت كاربلس.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من مبادئ دورة التعلم إعطاء الطلبة فرصة اكتشاف المعلومات بوضعهم في مشكلات تتحدى تفكيرهم.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'مرحلة "تقديم المفهوم" تُسمى أحياناً في بعض المراجع بمرحلة "الاختراع" أو "التفسير".', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'في مرحلة "استكشاف المفهوم"، يقوم المعلم بتفسير المفهوم مباشرة للطلاب اختصاراً للوقت.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تهدف مرحلة "تطبيق المفهوم" إلى مساعدة المتعلمين على استخدام المفهوم في مواقف وخبرات جديدة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من مميزات استراتيجية دورة التعلم أنها تستخدم مفهوم "فقدان الاتزان" كدافع للبحث عن المعرفة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من عيوب استراتيجية دورة التعلم أنها تغطي كمية كبيرة جداً من المادة الدراسية في وقت قصير.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'حالة "عدم الاتزان" (Disequilibrium) تحدث عندما يواجه التلميذ خبرة جديدة لا تتفق مع معرفته السابقة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: '"المواءمة" (Accommodation) تعني استعادة التوازن عبر الوصول لمعلومات جديدة وتعديل التراكيب المعرفية.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'دور المعلم في دورة التعلم يقتصر على التلقين المباشر ولا يشمل التخطيط أو تهيئة البيئة الصفية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'الأداء اللغوي هو كل ما يصدر عن الإنسان من كلام منطوق أو مكتوب للتواصل مع الآخرين.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الأداء اللغوي الجيد لا علاقة له بثقة الطالب بنفسه أو بقدرته على إدارة الحوارات.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'هناك ارتباط وثيق بين اللغة والتفكير؛ فلا تفكير بغير لغة تمد الفكر بالرموز.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الجانب "الوجداني" في الأداء اللغوي يشمل العمليات العقلية كالتذكر والفهم والتحليل.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'يشكل نشاط الاستماع حوالي 45% من النشاط اللغوي للتلميذ في المدرسة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: '"السمع" هو مجرد حاسة فسيولوجية لا إرادية، ويختلف عن "الاستماع" الذي يتطلب الانتباه والاستجابة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'يُعتبر الاستماع الجيد بمثابة "قراءة بالأذن" لأن كلاهما يمثل مهارات استقبال.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الاستماع يُعد وسيلة لـ "الفهم"، بينما التحدث يعتبر وسيلة لـ "الإفهام".', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'يُعد التحدث من أحدث أشكال الاتصال البشري وقد ظهر بعد اختراع الكتابة بوقت طويل.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: '"الازدواج اللغوي" المتمثل في الصراع بين العامية والفصحى يُعتبر من أبرز تحديات مهارة التحدث.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من صفات المتحدث الجيد أن يكون منفعلاً ومقاطعاً للآخرين حتى يثبت قوة شخصيته.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'mcq', q: 'تُصنف استراتيجية دورة التعلم كإحدى الاستراتيجيات المنبثقة عن النظرية:', opts: ['السلوكية', 'المعرفية', 'البنائية', 'الجشطلتية'], ans: 2 },
+                { type: 'mcq', q: 'تستند استراتيجية دورة التعلم في توظيف المعرفة عقلياً إلى نظرية ......... للنمو المعرفي:', opts: ['سكنر', 'بافلوف', 'بياجيه', 'واطسون'], ans: 2 },
+                { type: 'mcq', q: 'وفقاً لعطيو، ترتقي دورة التعلم بتفكير الطالب وتنقله تدريجياً من المرحلة ......... إلى المفاهيم المجردة:', opts: ['المحسوسة', 'الخيالية', 'المعقدة', 'السمعية'], ans: 0 },
+                { type: 'mcq', q: 'تتشكل دورة التعلم الأساسية (المعتمدة بالدراسة) من ......... مراحل رئيسية متناغمة:', opts: ['خمس', 'أربع', 'ثلاث', 'اثنتين'], ans: 2 },
+                { type: 'mcq', q: 'ظهرت دورة التعلم في الستينيات كجزء من مشروع SCIS لتطوير العلوم على يد العالم:', opts: ['جان بياجيه', 'روبرت كاربلس', 'جون ديوي', 'سكنر'], ans: 1 },
+                { type: 'mcq', q: 'المرحلة التي يتفاعل فيها التلاميذ مع خبرة جديدة تثير تساؤلاتهم ويجمعون البيانات دون تفسير المفهوم هي:', opts: ['تطبيق المفهوم', 'تقديم المفهوم', 'تقييم المفهوم', 'استكشاف المفهوم'], ans: 3 },
+                { type: 'mcq', q: 'المرحلة التي تُستخدم فيها الخبرات السابقة لتعميم المفهوم وتُسمى أحياناً بـ "الاختراع" هي:', opts: ['الاستكشاف', 'التنبؤ', 'التطبيق', 'تقديم المفهوم'], ans: 3 },
+                { type: 'mcq', q: 'عملية ذهنية يتفاعل فيها التلميذ مع الأنشطة لمحاولة استيعاب الخبرة الجديدة، تُسمى وفقاً لبياجيه:', opts: ['التمثيل', 'عدم الاتزان', 'المواءمة', 'التنظيم الذاتي'], ans: 0 },
+                { type: 'mcq', q: 'حالة (Disequilibrium) التي تحدث عندما يواجه التلميذ خبرة لا تتفق مع معرفته السابقة هي:', opts: ['التنظيم الذاتي', 'المواءمة', 'التمثيل', 'عدم الاتزان'], ans: 3 },
+                { type: 'mcq', q: 'تختلف دورة التعلم "فوق المعرفية" عن الأساسية بأنها تتكون من (4) مراحل بإضافة مرحلة:', opts: ['التهيئة', 'التجريد', 'تقييم المفهوم', 'التنبؤ'], ans: 2 },
+                { type: 'mcq', q: 'أي مما يلي يُعد من مميزات استخدام استراتيجية دورة التعلم؟', opts: ['تغطي كمية قليلة من المادة', 'تستخدم مفهوم "فقدان الاتزان" كدافع للبحث', 'مكلفة مادياً', 'تحتاج وقتاً كبيراً'], ans: 1 },
+                { type: 'mcq', q: 'أي مما يلي يُعد من عيوب وصعوبات تطبيق استراتيجية دورة التعلم؟', opts: ['تنمي التفكير التجريدي', 'تقدم العلم كطريقة بحث', 'تحتاج وقتاً وجهداً مضاعفاً في التخطيط والإعداد', 'تراعي القدرات العقلية للمتعلمين'], ans: 2 },
+                { type: 'mcq', q: 'في استراتيجية دورة التعلم، يقع عبء التخطيط وتنظيم المواقف وتوفير المصادر على:', opts: ['الأسرة', 'الإدارة', 'المتعلم', 'المعلم'], ans: 3 },
+                { type: 'mcq', q: 'مستويات تعليم اللغة تشمل المبتدئ (تنمية المهارات)، والمتوسط (تثبيت المهارات)، والمتقدم وهو:', opts: ['الانطلاق في الاستخدام', 'الاستماع فقط', 'الحفظ', 'التلقين'], ans: 0 },
+                { type: 'mcq', q: 'الأداء الحركي المعقد الذي يتسم بالسهولة واليسر وتناقص الأخطاء يعتبر من خصائص:', opts: ['صعوبات التعلم', 'الأداء الماهر', 'الاستماع السلبي', 'الاتصال الذاتي'], ans: 1 },
+                { type: 'mcq', q: 'السلوك الظاهر الذي يترجم المعارف والوجدان في صورة حركات مرئية يمثل الجانب:', opts: ['المعرفي', 'الوجداني', 'المهاري (النفس حركي)', 'الاجتماعي'], ans: 2 },
+                { type: 'mcq', q: 'يشكل نشاط الاستماع من إجمالي النشاط اللغوي للتلميذ حوالي:', opts: ['20%', '30%', '45%', '70%'], ans: 2 },
+                { type: 'mcq', q: 'مجرد حاسة فسيولوجية لا إرادية ولا تتطلب الانتباه، يُطلق عليها:', opts: ['الإنصات', 'السمع', 'الاستماع', 'الفهم'], ans: 1 },
+                { type: 'mcq', q: 'يُعرف الاستماع بأنه وسيلة لـ ......... بينما التحدث وسيلة لـ ......... :', opts: ['الفهم / الإفهام', 'الإفهام / الفهم', 'الحفظ / التذكر', 'الكتابة / القراءة'], ans: 0 },
+                { type: 'mcq', q: 'مهارتان صوتيتان متلازمتان (استقبال وإنتاج) يكمل بعضهما البعض للحصول على ثراء ودقة في اللغة:', opts: ['القراءة والكتابة', 'الاستماع والتحدث', 'الاستماع والقراءة', 'التحدث والكتابة'], ans: 1 },
+                { type: 'mcq', q: 'من أنواع الاستماع من حيث "المهارة":', opts: ['استمتاعي', 'وظيفي', 'تحصيلي', 'استنتاجي وناقدي'], ans: 3 },
+                { type: 'mcq', q: 'ضعف السمع وضعف الذكاء وعدم الميل للدراسة تعتبر من معوقات الاستماع الخاصة بـ:', opts: ['الطلاب', 'المعلم', 'المواد', 'الطريقة'], ans: 0 },
+                { type: 'mcq', q: 'عدم إدراك الفروق الفردية وافتقار الطريقة للوسائل المشوقة تعتبر معوقات استماع خاصة بـ:', opts: ['الطلاب', 'المعلم والطريقة', 'المادة الدراسية', 'البيئة المدرسية'], ans: 1 },
+                { type: 'mcq', q: 'أقدم أشكال الاتصال البشري والوسيلة الرئيسية لنقل الحضارة والثقافة هو فن:', opts: ['الكتابة', 'القراءة', 'التحدث', 'الاستماع'], ans: 2 },
+                { type: 'mcq', q: 'فن نقل المعتقدات والمشاعر والأفكار من المتحدث إلى المستمع بطلاقة وصحة تعبير يُعرف بـ:', opts: ['القراءة الجهرية', 'الاستماع', 'الاتصال الذاتي', 'التحدث'], ans: 3 },
+                { type: 'mcq', q: 'من العمليات العقلية التي تتضمنها عملية الكلام والتي تتعلق بـ (الإشارات والحركات) تسمى العمليات:', opts: ['الفكرية', 'اللغوية', 'الملمحية', 'النحوية'], ans: 2 },
+                { type: 'mcq', q: 'الثقة بالنفس، الرغبة القوية، الإعداد الجيد وتذكر الأفكار الرئيسية تعتبر من:', opts: ['عوامل نجاح التحدث', 'معوقات التحدث', 'أسس تقييم القراءة', 'صفات الاستماع الماهر'], ans: 0 },
+                { type: 'mcq', q: 'الازدواج اللغوي (الصراع بين العامية والفصحى وضعف القدوة) يُعد من أهم:', opts: ['مزايا دورة التعلم', 'تحديات ومشاكل التحدث', 'أهداف الاستماع', 'مستويات القراءة'], ans: 1 },
+                { type: 'mcq', q: 'انتظام المعلومات الجديدة ضمن التراكيب المعرفية للمتعلم من خلال أنشطة التطبيق في نظرية بياجيه يسمى:', opts: ['التنظيم الذاتي', 'المواءمة', 'عدم الاتزان', 'السمع'], ans: 0 },
+                { type: 'mcq', q: 'من صفات المتحدث الجيد الناجح:', opts: ['مقاطعة الآخرين باستمرار', 'استخدام العامية دائماً', 'الغموض في طرح الأفكار', 'مستمع جيد ومتزن انفعالياً'], ans: 3 }
+            ],
+            
+            // ================= أسئلة الفصل الثالث =================
+            ch3: [
+                { type: 'tf', q: 'يختلف التلاميذ المعاقون سمعياً عن العاديين في آلية وتسلسل اكتساب المفاهيم بشكل كامل.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'يتم اكتساب المفاهيم المختلفة لدى المعاقين سمعياً في أعمار زمنية أكبر مقارنة بأقرانهم العاديين.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'لا يواجه المعاقون سمعياً أي صعوبة في اكتساب المفاهيم التي تحمل معاني متناقضة.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'عملية دمج بعض المفاهيم مع بعضها للوصول إلى حلول تبدو أكثر صعوبة لدى المعاقين سمعياً.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الإعاقة السمعية تعني حتمية فقدان الإنسان لحقه في الحياة وقصور أدواره المجتمعية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'الفهم لغة يعني حسن التصور وجودة الاستعداد للاستنباط.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'عرف اليونسكو المفهوم بأنه تمثيل رمزي ذهني للسمات المشتركة والثابتة بين الفئات.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تمتاز المفاهيم بشكل عام بقابليتها للتعميم من موقف إلى آخر.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'تعريف "زين محمد شحاته" للمفهوم الديني يشمل اللفظ الذي يشير لمواقف أو أحداث يجمعها عنصر مشترك.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'واجهت تعريفات المفاهيم في التربية الإسلامية انتقادات لعدم توافر شروط التعريف العلمي الدقيق في بعضها.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'صنف العالم "جانيه" المفاهيم إلى مفاهيم عامة وأساسية وفرعية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'مفاهيم "الصلاة والزكاة والصيام" تندرج تحت فئة مفاهيم أركان الإسلام.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'المفهوم الموحد عند برونر هو المفهوم الذي يتضمن خصائص متميزة وغير ثابتة (مثل الجهاد).', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'تنمو المفاهيم المادية (مثل المسجد) بشكل أسرع من المفاهيم المجردة (مثل التقوى).', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'يُفضل البدء بالمفاهيم المجردة أولاً ثم الانتقال للمحسوسة عند تعليم المعاقين سمعياً.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'في مرحلة التصور الخيالي (3-6 سنوات) يتصور الطفل الخالق بصورة خيالية لا صلة لها بالحقيقة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'في المرحلة الفردية التي تبدأ من المراهقة، تتبلور فكرة الجنة والنار بشكل أعمق لدى الفرد.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'يتوقف نمو المفاهيم على العمر الزمني فقط ولا يتأثر نهائياً بالخبرات الفردية.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'شبه التربويون نمو المفهوم بـ "اللولب" الذي تزداد حلقاته اتساعاً بتراكم الخبرات.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من مبادئ "فؤاد قلادة" في تعلم المفاهيم عرض أمثلة مزدوجة ومقارنة (صحيح وغير صحيح).', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'من أسس "عدلي عزازي" اختيار المستويات التعليمية الأعلى والأكثر تعقيداً في بداية التعلم.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'من الأسس الخاصة بتعليم المعاقين سمعياً التدرج الدائم من البسيط إلى المعقد.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'عدد الأمثلة ونوعها يُصنف ضمن العوامل (التعليمية) وليس العوامل المتعلقة بالمادة.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'نموذج "كلوز ماير" يعتمد على تكليف التلاميذ باكتشاف المعيار سراً من خلال أمثلة (نعم/لا).', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'نموذج "هيلدا تابا" يركز على تصنيف الأمثلة الموجبة والسالبة للوصول إلى التعريف.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'نموذج "جانيه" يبدأ بالتعرف على اسم المفهوم ثم التمييز بين الأمثلة الموجبة والسالبة.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'نقص الخبرات اليدوية والممارسة يُصنف ضمن المشكلات (التدريسية) التي تعيق تعلم المعاقين سمعياً.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الوعي لغوياً يعني التفهم وسلامة الإدراك وحفظ الشيء وفهمه.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'tf', q: 'الوظيفة "التربوية" للوعي تتمثل في تحقيق القناعات ودفع الناس للعمل بشكل سلوكي.', opts: ['صح', 'خطأ'], ans: 1 },
+                { type: 'tf', q: 'أثبتت الدراسات تفوق أطفال التعليم الأزهري على أطفال التعليم العام في الوعي الديني.', opts: ['صح', 'خطأ'], ans: 0 },
+                { type: 'mcq', q: 'يتفق التلاميذ المعاقون سمعياً مع العاديين في ......... اكتساب المفاهيم، ويختلفون في التوقيت والقدرات.', opts: ['آلية وتسلسل', 'صعوبة', 'تأخر', 'دمج'], ans: 0 },
+                { type: 'mcq', q: 'يواجه التلاميذ المعاقون سمعياً صعوبة وتأخراً واضحاً في فهم المفاهيم:', opts: ['المادية والمحسوسة', 'المتناقضة والمتشابهة', 'الدينية البحتة', 'البسيطة المباشرة'], ans: 1 },
+                { type: 'mcq', q: 'عرف ......... المفهوم بأنه (فكرة تمثل عدداً من العناصر التي تشترك في أمر ما مثل كلمة أسد).', opts: ['اليونسكو', 'معجم علوم التربية', 'مجمع اللغة العربية', 'رشدي لبيب'], ans: 2 },
+                { type: 'mcq', q: '"تجريد للعناصر المشتركة بين عدة مواقف أو أشياء"، هو تعريف المفهوم عند الباحث:', opts: ['جودت سعادة', 'إبراهيم عطا', 'رشدي لبيب', 'كمال الدسوقي'], ans: 2 },
+                { type: 'mcq', q: 'تصور عقلي مجرد لأحداث أو سلوكيات متصلة بالدين، تتكون عبر الخبرات ويجمعها عنصر مشترك:', opts: ['تعريف حسن جابر', 'تعريف محمود فراج', 'تعريف زين شحاته', 'تعريف وضحى السويدي'], ans: 1 },
+                { type: 'mcq', q: 'صنف العالم "جانيه" المفاهيم إلى نوعين رئيسيين هما:', opts: ['عامة وخاصة', 'مادية ومجردة', 'موحدة وغير موحدة', 'أساسية وفرعية'], ans: 1 },
+                { type: 'mcq', q: 'مفاهيم (القضاء والقدر، الإسراء والمعراج) تندرج ضمن مفاهيم:', opts: ['أركان الإسلام', 'نماذج البشر', 'عالم الغيب', 'العقيدة'], ans: 3 },
+                { type: 'mcq', q: 'مفاهيم (الوحي، العرش، الجن، الملائكة) تعتبر من مفاهيم:', opts: ['صفات الدنيا', 'عالم الغيب', 'العقيدة', 'الجزاء'], ans: 1 },
+                { type: 'mcq', q: 'صنف "تائر" المفاهيم الدينية إلى مستويات تفرع، ومفهوم مثل "العبادات" يُعتبر من المفاهيم:', opts: ['العامة', 'الرئيسة', 'الفرعية', 'تحت الفرعية'], ans: 0 },
+                { type: 'mcq', q: 'المفهوم الذي يعبر عن علاقة بين الخصائص مثل "العمل الصالح" (موافقة الشرع + الإخلاص) يسمى المفهوم:', opts: ['الموحد', 'غير الموحد', 'الذي يتضمن علاقات', 'المادي'], ans: 2 },
+                { type: 'mcq', q: 'مرحلة النمو الديني التي يشتق فيها الطفل مفاهيمه من الواقع الملموس وتستمر حتى المراهقة هي:', opts: ['التصور الخيالي', 'الفردية', 'المجردة', 'الواقعية'], ans: 3 },
+                { type: 'mcq', q: 'تنمو المفاهيم ......... أسرع من المفاهيم ......... لسهولة استخدام الخبرات الحسية المباشرة.', opts: ['المجردة - المادية', 'المادية - المجردة', 'الدينية - الدنيوية', 'المعقدة - البسيطة'], ans: 1 },
+                { type: 'mcq', q: 'شبه "محمود عبده فراج" نمو المفهوم بـ ......... الذي تزداد حلقاته اتساعاً بتراكم الخبرات.', opts: ['الخط المستقيم', 'الهرم المقلوب', 'اللولب', 'الدائرة المغلقة'], ans: 2 },
+                { type: 'mcq', q: 'التأكد من صحة المفاهيم واختيار المستويات الأدنى أولاً، هو من أسس تعلم المفاهيم عند:', opts: ['فؤاد قلادة', 'هيلدا تابا', 'عدلي عزازي', 'جانيه'], ans: 2 },
+                { type: 'mcq', q: 'من العوامل المؤثرة في نمو المفاهيم والتي تتعلق بالتلميذ نفسه:', opts: ['استراتيجيات الاكتساب', 'التغذية الراجعة', 'عدد الأمثلة', 'العمر الزمني والذكاء'], ans: 3 },
+                { type: 'mcq', q: 'نموذج يركز على عرض أمثلة (نعم / لا) وتكليف التلاميذ باكتشاف المعيار سراً:', opts: ['كلوز ماير', 'برونر', 'هيلدا تابا', 'دسكنيسون'], ans: 1 },
+                { type: 'mcq', q: 'النموذج الذي يركز على مناقشة الأمثلة وتوسيعها لإظهار الخصائص والصفات ثم التحليل والتعريف هو نموذج:', opts: ['دسكنيسون', 'جانيه', 'برونر', 'هيلدا تابا'], ans: 0 },
+                { type: 'mcq', q: 'من صعوبات تعلم التربية الإسلامية (الخاصة بالمنهج الدراسي):', opts: ['الفصل الروتيني', 'ضعف المعينات السمعية', 'افتقار الكتب للأنشطة', 'نقص المعلمين'], ans: 2 },
+                { type: 'mcq', q: 'إدراك الفرد لنفسه وللبيئة المحيطة به، هو التعريف الاصطلاحي العام لـ:', opts: ['المفهوم', 'الوعي', 'النمو المعرفي', 'الاتزان'], ans: 1 },
+                { type: 'mcq', q: '"امتلاك المعلم للسلوك وإدراك جوانبه الإيجابية والسلبية" هو تعريف الوعي عند:', opts: ['حسن شحاته', 'جون سيرل', 'اللقاني والجمل', 'طلعت منصور'], ans: 2 },
+                { type: 'mcq', q: 'وظيفة الوعي التي تتمثل في نقل الإرث الثقافي والاتجاهات الأخلاقية من جيل لآخر هي الوظيفة:', opts: ['المعرفية', 'السلوكية', 'النفسية', 'التربوية'], ans: 3 },
+                { type: 'mcq', q: 'شرح مصالح الفئات الاجتماعية وتوضيح الأعراف والتقاليد يمثل الوظيفة ......... للوعي.', opts: ['المعرفية', 'التربوية', 'السلوكية', 'الذاتية'], ans: 0 },
+                { type: 'mcq', q: 'زيادة الوعي الديني تقلل من المخاوف المرضية والاستجابات الاكتئابية، هذا يوضح علاقة الوعي بـ:', opts: ['الفروق الفردية', 'التعصب', 'الصحة النفسية', 'الإعاقة السمعية'], ans: 2 },
+                { type: 'mcq', q: 'أثبتت الدراسات تدني مستوى الوعي الديني لدى الطلاب المعلمين بسبب:', opts: ['التعصب الديني', 'قصور برامج الإعداد', 'صعوبة المناهج', 'كثرة الأنشطة'], ans: 1 },
+                { type: 'mcq', q: 'من العوامل التعليمية المؤثرة في عملية اكتساب المفاهيم:', opts: ['الخبرات السابقة', 'نوع الجنس', 'التغذية الراجعة', 'مستوى القلق'], ans: 2 },
+                { type: 'mcq', q: 'المفهوم الموحد عند "برونر" يعرف بأنه مجموعة خواص مشتركة، ومثاله في التربية الإسلامية:', opts: ['الجهاد', 'طلب العلم', 'العمل الصالح', 'صلاة الفجر'], ans: 3 },
+                { type: 'mcq', q: 'تعريف "اليونسكو" للمفهوم هو:', opts: ['تجريد للعناصر المشتركة', 'فكرة تمثل عناصر تشترك في أمر ما', 'عبارة تستخدم لمجموعة أهداف تشترك بصفات', 'تصور عقلي مجرد لأحداث'], ans: 2 },
+                { type: 'mcq', q: '"تغيير لغوي عقلي يطلق بعد تجريد خصائص مشتركة لكائن أو موقف"، هذا تعريف المفهوم لـ:', opts: ['دائرة المعارف', 'إبراهيم محمد عطا', 'كمال الدسوقي', 'رشدي لبيب'], ans: 1 },
+                { type: 'mcq', q: 'من الأسس الخاصة بالمعاقين سمعياً عند تعليمهم مفاهيم التربية الإسلامية:', opts: ['البدء بالمجردات دائماً', 'تقليل الصور والوسائل', 'التدرج من البسيط إلى المعقد', 'الاعتماد على النص المكتوب فقط'], ans: 2 },
+                { type: 'mcq', q: 'من المشكلات الخاصة (بالإعاقة نفسها) والتي تصعب من تعلم المفاهيم:', opts: ['افتقار الكتب للأنشطة', 'النقل الخاطئ للمواضيع', 'صعوبات اللغة وضعف المعينات السمعية', 'الفصل الروتيني'], ans: 2 }
+            ]
         };
 
-        // متغيرات التحكم في الحالة
-        let currentQuizKey = '';
-        let currentQuestions = [];
-        let currentIndex = 0;
+        // متغيرات حالة الاختبار
+        let activeChapterData = [];
+        let activeChapterKey = '';
+        let currentQuestionIndex = 0;
         let score = 0;
-        let answered = false;
+        let isTransitioning = false;
 
-        // وظائف خلط الأسئلة
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        // عناصر الواجهة
+        const mainMenu = document.getElementById('main-menu');
+        const quizUi = document.getElementById('quiz-ui');
+        const resultScreen = document.getElementById('result-screen');
+        const mainSubtitle = document.getElementById('main-subtitle');
+        
+        const quizCard = document.getElementById('quiz-card');
+        const questionTypeText = document.getElementById('question-type');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
 
-        // بدء اختبار معين
-        function startQuiz(key) {
-            currentQuizKey = key;
-            const data = database[key];
-            currentQuestions = shuffle([...data.questions]);
-            currentIndex = 0;
+        // دالة بدء الاختبار
+        function startQuiz(chapterKey, chapterTitle) {
+            activeChapterKey = chapterKey;
+            activeChapterData = allQuestions[chapterKey];
+            currentQuestionIndex = 0;
             score = 0;
+
+            mainSubtitle.innerText = chapterTitle;
             
-            document.getElementById('home-screen').style.display = 'none';
-            document.getElementById('quiz-screen').style.display = 'block';
-            document.getElementById('quiz-ui').style.display = 'block';
-            document.getElementById('result-screen').style.display = 'none';
-            document.getElementById('quiz-title-display').innerText = data.title;
+            mainMenu.style.display = 'none';
+            resultScreen.style.display = 'none';
+            quizUi.style.display = 'block';
             
-            renderQuestion();
+            loadQuestion();
         }
 
-        // عرض السؤال الحالي
-        function renderQuestion() {
-            answered = false;
-            const q = currentQuestions[currentIndex];
+        // دالة العودة للقائمة الرئيسية
+        function showMainMenu() {
+            quizUi.style.display = 'none';
+            resultScreen.style.display = 'none';
+            mainMenu.style.display = 'flex';
+            mainSubtitle.innerText = 'منصة امتحانات المفاهيم اللغوية والأدبية';
+        }
+
+        // دالة إعادة نفس الاختبار
+        function restartCurrentQuiz() {
+            let title = '';
+            if(activeChapterKey === 'ch1') title = 'امتحان الفصل الأول: التواصل اللغوي';
+            if(activeChapterKey === 'ch2') title = 'امتحان الفصل الثاني: دورة التعلم والأداء اللغوي';
+            if(activeChapterKey === 'ch3') title = 'امتحان الفصل الثالث: المعاقون سمعياً والوعي الديني';
+            startQuiz(activeChapterKey, title);
+        }
+
+        function loadQuestion() {
+            isTransitioning = false;
+            const currentQ = activeChapterData[currentQuestionIndex];
             
-            document.getElementById('q-count').innerText = `سؤال ${currentIndex + 1} من ${currentQuestions.length}`;
-            document.getElementById('q-text').innerText = q.q;
-            document.getElementById('bar').style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
+            progressText.innerText = `السؤال ${currentQuestionIndex + 1} من ${activeChapterData.length}`;
+            questionTypeText.innerText = currentQ.type === 'tf' ? '✅ سؤال صح وخطأ' : '📝 سؤال اختياري';
+            questionText.innerText = currentQ.q;
+            optionsContainer.innerHTML = '';
             
-            const optionsBox = document.getElementById('options-box');
-            optionsBox.innerHTML = '';
-            
-            const shuffledOptions = shuffle([...q.options]);
-            shuffledOptions.forEach(opt => {
+            currentQ.opts.forEach((option, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'opt-btn';
-                btn.innerText = opt;
-                btn.onclick = () => validateAnswer(opt, q.correct, btn);
-                optionsBox.appendChild(btn);
+                btn.className = 'option-btn';
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
             });
 
-            document.getElementById('exp-box').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
+            quizCard.classList.remove('slide-in', 'slide-out');
+            quizCard.offsetHeight; 
+            quizCard.style.opacity = 1;
+            quizCard.style.transform = 'translateX(0)';
         }
 
-        // التحقق من الإجابة
-        function validateAnswer(selected, correct, btn) {
-            if (answered) return;
-            answered = true;
-            
-            const q = currentQuestions[currentIndex];
-            const allBtns = document.querySelectorAll('.opt-btn');
-            
-            if (selected === correct) {
-                btn.classList.add('correct');
+        function checkAnswer(selectedIndex, selectedBtn) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const currentQ = activeChapterData[currentQuestionIndex];
+            const correctIndex = currentQ.ans;
+            const allBtns = optionsContainer.children;
+
+            for (let btn of allBtns) {
+                btn.disabled = true;
+            }
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.add('correct');
                 score++;
             } else {
-                btn.classList.add('wrong');
-                allBtns.forEach(b => {
-                    if (b.innerText === correct) b.classList.add('correct');
-                });
+                selectedBtn.classList.add('wrong');
+                allBtns[correctIndex].classList.add('correct'); 
             }
 
-            const expBox = document.getElementById('exp-box');
-            expBox.innerHTML = `<strong>توضيح Lord Academy:</strong> ${q.exp}`;
-            expBox.style.display = 'block';
-            document.getElementById('next-btn').style.display = 'block';
-            
-            allBtns.forEach(b => b.disabled = true);
+            setTimeout(() => {
+                nextQuestion();
+            }, 1200);
         }
 
-        // الانتقال للسؤال التالي أو عرض النتائج
-        function handleNext() {
-            currentIndex++;
-            if (currentIndex < currentQuestions.length) {
-                renderQuestion();
-                window.scrollTo(0, 0);
-            } else {
-                finishQuiz();
-            }
+        function nextQuestion() {
+            quizCard.classList.add('slide-out');
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < activeChapterData.length) {
+                    quizCard.classList.remove('slide-out');
+                    quizCard.classList.add('slide-in');
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            }, 400); 
         }
 
-        // إنهاء الاختبار وعرض النتيجة
-        function finishQuiz() {
-            document.getElementById('quiz-ui').style.display = 'none';
-            document.getElementById('result-screen').style.display = 'block';
-            document.getElementById('bar').style.width = '100%';
-            
-            const resCircle = document.getElementById('final-res');
-            resCircle.innerText = `${score}/${currentQuestions.length}`;
-            
-            const percentage = (score / currentQuestions.length) * 100;
-            let msg = "";
-            if (percentage >= 90) msg = "أداء ملكي مذهل! أنت فخر LoRD Academy. 🌟";
-            else if (percentage >= 75) msg = "ممتاز جداً! مستواك قوي وثابت. 🏆";
-            else if (percentage >= 50) msg = "جيد، لكنك تحتاج لتركيز أكبر في التفاصيل. 👍";
-            else msg = "بذلت جهداً طيباً، راجع المادة مرة أخرى لتقوية روابطك العصبية! 📚";
-            
-            document.getElementById('res-msg').innerText = msg;
+        function showResult() {
+            quizUi.style.display = 'none';
+            resultScreen.style.display = 'block';
+            scoreText.innerText = score;
         }
 
-        // العودة للرئيسية
-        function returnToHome() {
-            document.getElementById('home-screen').style.display = 'flex';
-            document.getElementById('quiz-screen').style.display = 'none';
-            window.scrollTo(0, 0);
-        }
     </script>
 </body>
 </html>
